@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
 import { Sidebar } from './sidebar'
+import { useAuth } from '@/lib/auth/context'
 
 interface HeaderProps {
   title?: string
@@ -21,6 +22,12 @@ interface HeaderProps {
 }
 
 export function Header({ title, showBackButton = false, onBackClick }: HeaderProps) {
+  const { logout, user } = useAuth()
+
+  const handleLogout = () => {
+    logout()
+  }
+
   return (
     <header className="flex h-16 items-center justify-between border-b bg-background px-4 lg:px-6">
       {/* Left Section */}
@@ -79,9 +86,9 @@ export function Header({ title, showBackButton = false, onBackClick }: HeaderPro
           <DropdownMenuContent className="w-56" align="end" forceMount>
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">John Doe</p>
+                <p className="text-sm font-medium leading-none">{user ? `${user.firstName} ${user.lastName}` : 'John Doe'}</p>
                 <p className="text-xs leading-none text-muted-foreground">
-                  admin@example.com
+                  {user?.email || 'admin@example.com'}
                 </p>
               </div>
             </DropdownMenuLabel>
@@ -95,7 +102,10 @@ export function Header({ title, showBackButton = false, onBackClick }: HeaderPro
               <span>Settings</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-red-600 transition-colors duration-200">
+            <DropdownMenuItem 
+              className="text-red-600 transition-colors duration-200"
+              onClick={handleLogout}
+            >
               <LogOut className="mr-2 h-4 w-4" />
               <span>Log out</span>
             </DropdownMenuItem>

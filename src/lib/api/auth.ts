@@ -1,68 +1,123 @@
 import { apiService } from './index'
-
-export interface LoginCredentials {
-  email: string
-  password: string
-}
-
-export interface LoginResponse {
-  token: string
-  user: User
-  permissions: string[]
-  roles: string[]
-}
-
-export interface User {
-  id: string
-  email: string
-  firstName: string
-  lastName: string
-  role: string
-  permissions: string[]
-  avatar?: string
-  isActive: boolean
-  createdAt: string
-  updatedAt: string
-}
-
-export interface RegisterData {
-  email: string
-  password: string
-  firstName: string
-  lastName: string
-  role?: string
-}
+import { getDeviceId } from '../auth/device-id'
+import { ApiErrorHandler } from './error-handler'
+import { 
+  ApiResponse, 
+  SendOtpRequest,
+  VerifyOtpRequest, 
+  VerifyOtpResponse,
+  User
+} from '@/types/api'
 
 export const authApi = {
-  login: async (credentials: LoginCredentials): Promise<LoginResponse> => {
-    return apiService.post<LoginResponse>('/auth/login', credentials)
+  /**
+   * Send OTP to email for authentication
+   * Handles Spring Boot ResponseUtil.success() responses
+   */
+  sendOtp: async (email: string): Promise<ApiResponse<string>> => {
+    const deviceId = getDeviceId()
+    const requestData: SendOtpRequest = {
+      email,
+      deviceId
+    }
+    
+    const response = await apiService.post<string>('/v3/admin/auth/send-otp', requestData)
+    
+    // Validate response structure
+    if (!ApiErrorHandler.isSuccess(response)) {
+      throw new Error(ApiErrorHandler.getErrorMessage(response))
+    }
+    
+    return response
   },
 
-  register: async (data: RegisterData): Promise<LoginResponse> => {
-    return apiService.post<LoginResponse>('/auth/register', data)
+  /**
+   * Verify OTP and complete authentication
+   * Handles Spring Boot ResponseUtil.success() responses with cookie setting
+   */
+  verifyOtp: async (email: string, otpCode: string): Promise<ApiResponse<VerifyOtpResponse>> => {
+    const deviceId = getDeviceId()
+    const requestData: VerifyOtpRequest = {
+      email,
+      otpCode,
+      deviceId
+    }
+    
+    const response = await apiService.post<VerifyOtpResponse>('/v3/admin/auth/verify-otp', requestData)
+    
+    // Validate response structure
+    if (!ApiErrorHandler.isSuccess(response)) {
+      throw new Error(ApiErrorHandler.getErrorMessage(response))
+    }
+    
+    return response
   },
 
+  /**
+   * Get current user information
+   * Handles Spring Boot ResponseUtil.success() responses
+   */
+  getCurrentUser: async (): Promise<ApiResponse<User>> => {
+    const response = await apiService.get<User>('/v3/admin/auth/me')
+    
+    // Validate response structure
+    if (!ApiErrorHandler.isSuccess(response)) {
+      throw new Error(ApiErrorHandler.getErrorMessage(response))
+    }
+    
+    return response
+  },
+
+  /**
+   * Logout user (clear tokens)
+   * Handles Spring Boot ResponseUtil.success() responses
+   */
   logout: async (): Promise<void> => {
-    return apiService.post<void>('/auth/logout')
+    try {
+      const deviceId = getDeviceId()
+      
+      if (!deviceId) {
+        throw new Error('No device ID available')
+      }
+
+      const response = await apiService.post<void>(`/v3/auth/logout/${deviceId}`)
+      
+      // Check if logout was successful
+      if (!ApiErrorHandler.isSuccess(response)) {
+        console.warn('Logout API call failed:', ApiErrorHandler.getErrorMessage(response))
+      }
+    } catch (error) {
+      console.warn('Logout API call error:', error)
+    } finally {
+      // Always clear local tokens regardless of API response
+      apiService.logout()
+    }
   },
 
-  getCurrentUser: async (): Promise<User> => {
-    return apiService.get<User>('/auth/me')
-  },
+  /**
+   * Refresh access token
+   * Handles Spring Boot ResponseUtil.success() responses
+   * Uses HTTP-only cookies automatically sent by browser
+   */
+  refreshToken: async (): Promise<ApiResponse<{ accessToken: string; refreshToken: string; expiresIn: number }>> => {
+    const deviceId = getDeviceId()
 
-  refreshToken: async (): Promise<{ token: string }> => {
-    return apiService.post<{ token: string }>('/auth/refresh')
-  },
+    if (!deviceId) {
+      throw new Error('No device ID available')
+    }
 
-  forgotPassword: async (email: string): Promise<void> => {
-    return apiService.post<void>('/auth/forgot-password', { email })
-  },
+    const response = await apiService.post<{ accessToken: string; refreshToken: string; expiresIn: number }>(
+      `/v3/auth/refresh-token/${deviceId}`
+    )
 
-  resetPassword: async (token: string, password: string): Promise<void> => {
-    return apiService.post<void>('/auth/reset-password', { token, password })
-  },
+    if (!ApiErrorHandler.isSuccess(response)) {
+      throw new Error(ApiErrorHandler.getErrorMessage(response))
+    }
 
-  changePassword: async (currentPassword: string, newPassword: string): Promise<void> => {
-    return apiService.post<void>('/auth/change-password', { currentPassword, newPassword })
+    return response
   }
 }
+
+
+// Re-export types for convenience
+export type { User } from '@/types/api'

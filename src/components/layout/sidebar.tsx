@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Separator } from '@/components/ui/separator'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { 
@@ -28,6 +27,7 @@ import {
   Menu
 } from 'lucide-react'
 import { NAVIGATION_CONFIG } from '@/lib/constants'
+import { useAuth } from '@/lib/auth/context'
 
 const iconMap = {
   LayoutDashboard,
@@ -53,6 +53,7 @@ interface SidebarProps {
 export function Sidebar({ className, isMobile = false, onClose }: SidebarProps) {
   const pathname = usePathname()
   const [expandedSections, setExpandedSections] = useState<string[]>(['main'])
+  const { logout, user } = useAuth()
 
   const toggleSection = (section: string) => {
     setExpandedSections(prev => 
@@ -62,7 +63,7 @@ export function Sidebar({ className, isMobile = false, onClose }: SidebarProps) 
     )
   }
 
-  const renderNavItem = (item: any) => {
+  const renderNavItem = (item: { href: string; icon: string; name: string }) => {
     const Icon = iconMap[item.icon as keyof typeof iconMap]
     const isActive = pathname === item.href
 
@@ -82,7 +83,7 @@ export function Sidebar({ className, isMobile = false, onClose }: SidebarProps) 
     )
   }
 
-  const renderSection = (sectionKey: string, section: any) => {
+  const renderSection = (sectionKey: string, section: { href: string; icon: string; name: string } | { href: string; icon: string; name: string }[]) => {
     const isExpanded = expandedSections.includes(sectionKey)
     const hasSubItems = Array.isArray(section)
 
@@ -159,10 +160,16 @@ export function Sidebar({ className, isMobile = false, onClose }: SidebarProps) 
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">John Doe</p>
-            <p className="text-xs text-muted-foreground truncate">admin@example.com</p>
+            <p className="text-sm font-medium truncate">{user ? `${user.firstName} ${user.lastName}` : 'John Doe'}</p>
+            <p className="text-xs text-muted-foreground truncate">{user?.email || 'admin@example.com'}</p>
           </div>
-          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 transition-all duration-200 hover:bg-accent">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="h-8 w-8 p-0 transition-all duration-200 hover:bg-accent"
+            onClick={logout}
+            title="Logout"
+          >
             <LogOut className="h-4 w-4" />
           </Button>
         </div>
