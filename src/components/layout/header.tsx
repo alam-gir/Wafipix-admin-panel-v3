@@ -1,6 +1,7 @@
 'use client'
 
 import { ArrowLeft, Bell, ShoppingCart, User, Settings, LogOut, Menu } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
@@ -23,9 +24,14 @@ interface HeaderProps {
 
 export function Header({ title, showBackButton = false, onBackClick }: HeaderProps) {
   const { logout, user } = useAuth()
+  const router = useRouter()
 
   const handleLogout = () => {
     logout()
+  }
+
+  const handleProfileClick = () => {
+    router.push('/profile')
   }
 
   return (
@@ -77,8 +83,8 @@ export function Header({ title, showBackButton = false, onBackClick }: HeaderPro
             <Button variant="ghost" className="relative h-8 w-8 rounded-full transition-all duration-200 hover:bg-accent">
               <Avatar className="h-8 w-8 transition-all duration-200 hover:ring-2 hover:ring-primary/20">
                 <AvatarImage src="/avatars/admin.jpg" alt="User" />
-                <AvatarFallback>
-                  <User className="h-4 w-4" />
+                <AvatarFallback className="bg-primary text-primary-foreground">
+                  {user ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}` : 'JD'}
                 </AvatarFallback>
               </Avatar>
             </Button>
@@ -93,7 +99,10 @@ export function Header({ title, showBackButton = false, onBackClick }: HeaderPro
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="transition-colors duration-200">
+            <DropdownMenuItem 
+              className="transition-colors duration-200 cursor-pointer"
+              onClick={handleProfileClick}
+            >
               <User className="mr-2 h-4 w-4" />
               <span>Profile</span>
             </DropdownMenuItem>

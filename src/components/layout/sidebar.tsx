@@ -155,8 +155,8 @@ export function Sidebar({ className, isMobile = false, onClose }: SidebarProps) 
         <div className="flex items-center space-x-3">
           <Avatar className="h-8 w-8 transition-all duration-200 hover:ring-2 hover:ring-primary/20">
             <AvatarImage src="/avatars/admin.jpg" />
-            <AvatarFallback>
-              <User className="h-4 w-4" />
+            <AvatarFallback className="bg-primary text-primary-foreground">
+              {user ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}` : 'JD'}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">

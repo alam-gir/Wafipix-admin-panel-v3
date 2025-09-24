@@ -9,6 +9,10 @@ export const PERMISSIONS = {
   USERS_EDIT: 'users:edit',
   USERS_DELETE: 'users:delete',
   
+  // Profile
+  PROFILE_VIEW: 'profile:view',
+  PROFILE_EDIT: 'profile:edit',
+  
   // Role Management
   ROLES_VIEW: 'roles:view',
   ROLES_CREATE: 'roles:create',
@@ -43,6 +47,13 @@ export const NAVIGATION_CONFIG = {
       icon: 'Users',
       permission: PERMISSIONS.USERS_VIEW,
       roles: [ROLES.ADMIN, ROLES.MANAGER]
+    },
+    {
+      name: 'Profile',
+      href: '/profile',
+      icon: 'User',
+      permission: PERMISSIONS.PROFILE_VIEW,
+      roles: [ROLES.ADMIN, ROLES.MANAGER, ROLES.USER]
     },
     {
       name: 'Roles',
