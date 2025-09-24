@@ -20,28 +20,28 @@ export interface MetricCard {
 
 export interface ChartData {
   date: string
-  sales: number
+  revenue: number
   profit: number
-  purchase: number
-  orders: number
+  projects: number
+  clients: number
 }
 
 export interface DashboardMetrics {
-  totalSales: MetricCard
-  totalProfit: MetricCard
-  totalPurchase: MetricCard
-  totalOrders: MetricCard
-  totalStores: MetricCard
-  pendingOrders: MetricCard
-  totalInventory: MetricCard
-  inventoryValue: MetricCard
+  totalRevenue: MetricCard
+  totalInvestment: MetricCard
+  netProfit: MetricCard
+  totalProjects: MetricCard
+  activeProjects: MetricCard
+  pendingProjects: MetricCard
+  totalClients: MetricCard
+  totalServices: MetricCard
 }
 
 export interface TodayReport {
-  sales: number
+  revenue: number
   profit: number
-  purchase: number
-  orders: number
+  projects: number
+  clients: number
 }
 
 export const dashboardApi = {

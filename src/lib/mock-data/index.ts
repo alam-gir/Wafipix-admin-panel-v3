@@ -89,101 +89,101 @@ const mockPermissions: Permission[] = [
   { id: '11', name: 'settings:edit', description: 'Edit settings', category: 'Settings' }
 ]
 
-// Mock dashboard data
+// Mock dashboard data for Wafipix Design Agency
 const mockDashboardMetrics: DashboardMetrics = {
-  totalSales: {
+  totalRevenue: {
     id: '1',
-    title: 'Total Sales',
-    value: 412633,
+    title: 'Total Revenue',
+    value: 245680,
     icon: 'DollarSign',
     color: 'primary',
-    trend: { value: 12.5, isPositive: true },
+    trend: { value: 18.5, isPositive: true },
     format: 'currency'
   },
-  totalProfit: {
+  totalInvestment: {
     id: '2',
-    title: 'Total Profit',
-    value: 27639,
+    title: 'Total Investment',
+    value: 45680,
+    icon: 'TrendingDown',
+    color: 'destructive',
+    trend: { value: 5.2, isPositive: false },
+    format: 'currency'
+  },
+  netProfit: {
+    id: '3',
+    title: 'Net Profit',
+    value: 200000,
     icon: 'TrendingUp',
     color: 'success',
-    trend: { value: 8.2, isPositive: true },
+    trend: { value: 22.3, isPositive: true },
     format: 'currency'
   },
-  totalPurchase: {
-    id: '3',
-    title: 'Total Purchase',
-    value: 2397630,
-    icon: 'ShoppingCart',
-    color: 'purple',
-    trend: { value: -2.1, isPositive: false },
-    format: 'currency'
-  },
-  totalOrders: {
+  totalProjects: {
     id: '4',
-    title: 'Total Orders',
-    value: 118,
+    title: 'Total Projects',
+    value: 156,
     icon: 'FileText',
-    color: 'warning',
-    trend: { value: 15.3, isPositive: true },
+    color: 'primary',
+    trend: { value: 12.8, isPositive: true },
     format: 'number'
   },
-  totalStores: {
+  activeProjects: {
     id: '5',
-    title: 'Total Stores',
-    value: 39,
-    icon: 'Building',
-    color: 'teal',
-    trend: { value: 5.0, isPositive: true },
+    title: 'Active Projects',
+    value: 23,
+    icon: 'Activity',
+    color: 'warning',
+    trend: { value: 8.5, isPositive: true },
     format: 'number'
   },
-  pendingOrders: {
+  pendingProjects: {
     id: '6',
-    title: 'Pending Orders',
-    value: 2,
+    title: 'Pending Projects',
+    value: 7,
     icon: 'Clock',
     color: 'warning',
-    trend: { value: -50.0, isPositive: true },
+    trend: { value: -15.0, isPositive: true },
     format: 'number'
   },
-  totalInventory: {
+  totalClients: {
     id: '7',
-    title: 'Total Inventory Items',
-    value: 7355,
-    icon: 'Package',
-    color: 'primary',
-    trend: { value: 3.2, isPositive: true },
+    title: 'Total Clients',
+    value: 89,
+    icon: 'Users',
+    color: 'teal',
+    trend: { value: 6.2, isPositive: true },
     format: 'number'
   },
-  inventoryValue: {
+  totalServices: {
     id: '8',
-    title: 'Total Inventory Value',
-    value: 2014927,
-    icon: 'Calculator',
-    color: 'destructive',
-    trend: { value: -1.8, isPositive: false },
-    format: 'currency'
+    title: 'Total Services',
+    value: 12,
+    icon: 'Briefcase',
+    color: 'purple',
+    trend: { value: 0, isPositive: true },
+    format: 'number'
   }
 }
 
 const mockChartData: ChartData[] = [
-  { date: '2024-08-15', sales: 322224.35, profit: 22840.86, purchase: 92227, orders: 15 },
-  { date: '2024-08-16', sales: 105000, profit: 15000, purchase: 45000, orders: 8 },
-  { date: '2024-08-17', sales: 85000, profit: 12000, purchase: 38000, orders: 6 },
-  { date: '2024-08-23', sales: 95000, profit: 13500, purchase: 42000, orders: 7 },
-  { date: '2024-08-24', sales: 78000, profit: 11000, purchase: 35000, orders: 5 },
-  { date: '2024-08-31', sales: 120000, profit: 18000, purchase: 55000, orders: 12 },
-  { date: '2024-09-03', sales: 88000, profit: 12500, purchase: 40000, orders: 9 },
-  { date: '2024-09-05', sales: 92000, profit: 13000, purchase: 41000, orders: 8 },
-  { date: '2024-09-06', sales: 76000, profit: 10800, purchase: 34000, orders: 6 },
-  { date: '2024-09-07', sales: 98000, profit: 14000, purchase: 44000, orders: 10 },
-  { date: '2024-09-08', sales: 85000, profit: 12000, purchase: 38000, orders: 7 }
+  { date: '2024-08-15', revenue: 12500, profit: 8500, projects: 3, clients: 2 },
+  { date: '2024-08-16', revenue: 8900, profit: 6200, projects: 2, clients: 1 },
+  { date: '2024-08-17', revenue: 15200, profit: 10800, projects: 4, clients: 3 },
+  { date: '2024-08-23', revenue: 18700, profit: 13200, projects: 5, clients: 2 },
+  { date: '2024-08-24', revenue: 11200, profit: 7800, projects: 3, clients: 2 },
+  { date: '2024-08-31', revenue: 22300, profit: 15800, projects: 6, clients: 4 },
+  { date: '2024-09-03', revenue: 16800, profit: 11800, projects: 4, clients: 3 },
+  { date: '2024-09-05', revenue: 19500, profit: 13800, projects: 5, clients: 2 },
+  { date: '2024-09-06', revenue: 14200, profit: 9800, projects: 3, clients: 2 },
+  { date: '2024-09-07', revenue: 20100, profit: 14200, projects: 5, clients: 3 },
+  { date: '2024-09-08', revenue: 17600, profit: 12400, projects: 4, clients: 2 }
 ]
 
 const mockTodayReport: TodayReport = {
-  sales: 0,
-  profit: 0,
-  purchase: 0,
-  orders: 0
+  revenue: 8500,
+  profit: 6200,
+  projects: 2,
+  clients: 1
 }
 
 export function getMockResponse<T>(url: string, data?: any): T {
