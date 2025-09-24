@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowLeft, Bell, ShoppingCart, User, Settings, LogOut, Menu } from 'lucide-react'
+import { ArrowLeft, User, Settings, LogOut, Menu } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -12,8 +12,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Badge } from '@/components/ui/badge'
 import { Sidebar } from './sidebar'
+import { NotificationPopup } from './notification-popup'
 import { useAuth } from '@/lib/auth/context'
 
 interface HeaderProps {
@@ -60,22 +60,8 @@ export function Header({ title, showBackButton = false, onBackClick }: HeaderPro
 
       {/* Right Section */}
       <div className="flex items-center space-x-2 lg:space-x-4">
-        {/* Purchase Button - Hidden on mobile */}
-        <Button className="hidden sm:flex bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200">
-          <ShoppingCart className="mr-2 h-4 w-4" />
-          <span className="hidden lg:inline">Purchase</span>
-        </Button>
-
         {/* Notifications */}
-        <Button variant="ghost" size="sm" className="relative h-8 w-8 p-0 transition-all duration-200 hover:bg-accent">
-          <Bell className="h-4 w-4" />
-          <Badge 
-            variant="destructive" 
-            className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
-          >
-            3
-          </Badge>
-        </Button>
+        <NotificationPopup />
 
         {/* User Menu */}
         <DropdownMenu>
