@@ -124,7 +124,7 @@ export const NAVIGATION_CONFIG = {
   management: [
     {
       name: 'Categories',
-      href: '/management/categories',
+      href: '/categories',
       icon: 'Tags',
       permission: PERMISSIONS.CATEGORIES_VIEW,
       roles: [ROLES.ADMIN, ROLES.MANAGER]

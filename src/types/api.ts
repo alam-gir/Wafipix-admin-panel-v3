@@ -58,3 +58,27 @@ export interface User {
   createdAt: string;
   updatedAt: string;
 }
+
+// Category Types
+export interface Category {
+  id: string;
+  title: string;
+  subtitle: string;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+  updatedBy: string;
+}
+
+export interface CreateCategoryRequest {
+  title: string;
+  subtitle: string;
+}
+
+export interface UpdateCategoryRequest {
+  title: string;
+  subtitle: string;
+}
+
+export interface CategoryResponse extends ApiResponse<Category> {}
+export interface CategoriesResponse extends ApiResponse<Category[]> {}
