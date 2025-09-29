@@ -131,7 +131,7 @@ export const NAVIGATION_CONFIG = {
     },
     {
       name: 'Services',
-      href: '/management/services',
+      href: '/services',
       icon: 'Briefcase',
       permission: PERMISSIONS.SERVICES_VIEW,
       roles: [ROLES.ADMIN, ROLES.MANAGER]

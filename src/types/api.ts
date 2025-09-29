@@ -82,3 +82,86 @@ export interface UpdateCategoryRequest {
 
 export interface CategoryResponse extends ApiResponse<Category> {}
 export interface CategoriesResponse extends ApiResponse<Category[]> {}
+
+// Service Types
+export interface Service {
+  id: string;
+  title: string;
+  slug: string;
+  subtitle: string;
+  description: string;
+  icon: string;
+  categoryId: string;
+  categoryTitle: string;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+  updatedBy: string;
+}
+
+export interface CreateServiceRequest {
+  title: string;
+  subtitle: string;
+  description: string;
+  icon: File;
+  categoryId: string;
+}
+
+export interface UpdateServiceRequest {
+  title: string;
+  subtitle: string;
+  description: string;
+  icon?: File;
+  categoryId: string;
+}
+
+export interface ServiceSearchRequest {
+  title?: string;
+  slug?: string;
+  categoryId?: string;
+  active?: boolean;
+  page?: number;
+  size?: number;
+  sortBy?: string;
+  sortDirection?: string;
+}
+
+export interface ServiceResponse extends ApiResponse<Service> {}
+export interface ServicesResponse extends ApiResponse<Service[]> {}
+
+// Service Feature Types
+export interface ServiceFeature {
+  text: string;
+  highlight: boolean;
+}
+
+export interface ServiceFeatureRequest {
+  text: string;
+  highlight: boolean;
+}
+
+export interface UpdateServiceFeaturesRequest {
+  serviceId: string;
+  features: ServiceFeatureRequest[];
+}
+
+export interface ServiceFeaturesResponse extends ApiResponse<ServiceFeature[]> {}
+
+// Service FAQ Types
+export interface ServiceFAQ {
+  question: string;
+  answer: string;
+}
+
+export interface ServiceFAQRequest {
+  question: string;
+  answer: string;
+}
+
+export interface UpdateServiceFAQsRequest {
+  serviceId: string;
+  faqs: ServiceFAQRequest[];
+}
+
+export interface ServiceFAQsResponse extends ApiResponse<ServiceFAQ[]> {}
