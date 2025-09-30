@@ -158,9 +158,9 @@ export const NAVIGATION_CONFIG = {
       roles: [ROLES.ADMIN, ROLES.MANAGER]
     },
     {
-      name: 'Advertisement Videos',
-      href: '/management/advertisements',
-      icon: 'Video',
+      name: 'Hero Video',
+      href: '/management/advertisement-videos',
+      icon: 'Monitor',
       permission: PERMISSIONS.ADVERTISEMENTS_VIEW,
       roles: [ROLES.ADMIN, ROLES.MANAGER]
     },

@@ -196,3 +196,19 @@ export interface UpdateClientRequest {
 
 export interface ClientResponse extends ApiResponse<Client> {}
 export interface ClientsResponse extends ApiResponse<Client[]> {}
+
+// Advertisement Video Types
+export interface AdvertisementVideo {
+  id: string;
+  url: string;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+  updatedBy: string;
+}
+
+export interface CreateAdvertisementVideoRequest {
+  videoFile: File;
+}
+
+export interface AdvertisementVideoResponse extends ApiResponse<AdvertisementVideo> {}
