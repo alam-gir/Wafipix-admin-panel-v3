@@ -27,6 +27,10 @@ export const PERMISSIONS = {
   WORKS_EDIT: 'works:edit',
   WORKS_DELETE: 'works:delete',
   
+  CONTACTS_VIEW: 'contacts:view',
+  CONTACTS_REPLY: 'contacts:reply',
+  CONTACTS_DELETE: 'contacts:delete',
+  
   CLIENTS_VIEW: 'clients:view',
   CLIENTS_CREATE: 'clients:create',
   CLIENTS_EDIT: 'clients:edit',
@@ -137,13 +141,6 @@ export const NAVIGATION_CONFIG = {
       roles: [ROLES.ADMIN, ROLES.MANAGER]
     },
     {
-      name: 'Portfolio',
-      href: '/management/portfolio',
-      icon: 'FolderOpen',
-      permission: PERMISSIONS.WORKS_VIEW,
-      roles: [ROLES.ADMIN, ROLES.MANAGER]
-    },
-    {
       name: 'Trusted Clients',
       href: '/management/clients',
       icon: 'Users',
@@ -162,13 +159,6 @@ export const NAVIGATION_CONFIG = {
       href: '/management/advertisement-videos',
       icon: 'Monitor',
       permission: PERMISSIONS.ADVERTISEMENTS_VIEW,
-      roles: [ROLES.ADMIN, ROLES.MANAGER]
-    },
-    {
-      name: 'Users',
-      href: '/management/users',
-      icon: 'UserCheck',
-      permission: PERMISSIONS.USERS_VIEW,
       roles: [ROLES.ADMIN, ROLES.MANAGER]
     },
     {

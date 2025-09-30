@@ -271,3 +271,166 @@ export interface UpdateReviewRequest {
 export interface ReviewResponse extends ApiResponse<Review> {}
 export interface ReviewsResponse extends ApiResponse<Review[]> {}
 export interface ReviewPlatformsResponse extends ApiResponse<string[]> {}
+
+// Contact Types
+export interface ContactReplyResponse {
+  id: string
+  message: string
+  createdAt: string
+  updatedAt: string
+  createdBy: string
+  updatedBy: string
+}
+
+export interface ContactResponse {
+  id: string
+  fullName: string
+  email: string
+  phone: string
+  message: string
+  status: string
+  readBy: string
+  replies: ContactReplyResponse[]
+  createdAt: string
+  updatedAt: string
+  createdBy: string
+  updatedBy: string
+}
+
+export interface ContactReplyRequest {
+  message: string
+}
+
+// Contact API Response Types
+export interface ContactsResponse extends ApiResponse<Page<ContactResponse>> {}
+export interface ContactDetailResponse extends ApiResponse<ContactResponse> {}
+export interface ContactReplyApiResponse extends ApiResponse<ContactResponse> {}
+export interface UnreadCountResponse extends ApiResponse<number> {}
+
+// Portfolio Types
+export interface FileResponse {
+  id: string;
+  fileName: string;
+  originalFileName: string;
+  filePath: string;
+  publicUrl: string;
+  mimeType: string;
+  fileSize: number;
+  fileExtension: string;
+  folderPath: string;
+  isActive: boolean;
+  description?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface GalleryItemResponse {
+  id: string;
+  file: FileResponse;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface GalleryResponse {
+  id: string;
+  isMobileGrid: boolean;
+  items: GalleryItemResponse[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface WorkListResponse {
+  id: string;
+  title: string;
+  slug: string;
+  service: Service;
+  description: string;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface WorkResponse {
+  id: string;
+  title: string;
+  slug: string;
+  service: Service;
+  description: string;
+  coverVideo?: FileResponse;
+  coverImage?: FileResponse;
+  profileVideo?: FileResponse;
+  profileImage?: FileResponse;
+  galleries: GalleryResponse[];
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateWorkRequest {
+  title: string;
+  serviceId: string;
+  description?: string;
+  coverVideo?: File;
+  coverImage?: File;
+  profileVideo?: File;
+  profileImage?: File;
+}
+
+export interface UpdateWorkRequest {
+  title?: string;
+  serviceId?: string;
+  description?: string;
+  coverVideo?: File;
+  coverImage?: File;
+  profileVideo?: File;
+  profileImage?: File;
+}
+
+export interface CreateGalleryRequest {
+  isMobileGrid?: boolean;
+  files?: File[];
+}
+
+export interface UpdateGalleryRequest {
+  isMobileGrid?: boolean;
+}
+
+export interface RemoveGalleryFilesRequest {
+  galleryItemIds: string[];
+}
+
+// Spring Boot Page structure
+export interface Page<T> {
+  content: T[]
+  pageable: {
+    pageNumber: number
+    pageSize: number
+    sort: {
+      unsorted: boolean
+      empty: boolean
+      sorted: boolean
+    }
+    offset: number
+    unpaged: boolean
+    paged: boolean
+  }
+  last: boolean
+  totalElements: number
+  totalPages: number
+  sort: {
+    unsorted: boolean
+    empty: boolean
+    sorted: boolean
+  }
+  first: boolean
+  size: number
+  number: number
+  numberOfElements: number
+  empty: boolean
+}
+
+// API Response Types
+export interface WorksResponse extends ApiResponse<Page<WorkListResponse>> {}
+export interface WorkDetailResponse extends ApiResponse<WorkResponse> {}
+export interface GalleriesResponse extends ApiResponse<GalleryResponse[]> {}
+export interface GalleryDetailResponse extends ApiResponse<GalleryResponse> {}
