@@ -165,3 +165,34 @@ export interface UpdateServiceFAQsRequest {
 }
 
 export interface ServiceFAQsResponse extends ApiResponse<ServiceFAQ[]> {}
+
+// Client Types
+export interface Client {
+  id: string;
+  title: string;
+  logo: string;
+  description: string;
+  companyUrl: string;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+  updatedBy: string;
+}
+
+export interface CreateClientRequest {
+  title: string;
+  description?: string;
+  companyUrl?: string;
+  logo?: File;
+}
+
+export interface UpdateClientRequest {
+  title: string;
+  description?: string;
+  companyUrl?: string;
+  logo?: File;
+}
+
+export interface ClientResponse extends ApiResponse<Client> {}
+export interface ClientsResponse extends ApiResponse<Client[]> {}
