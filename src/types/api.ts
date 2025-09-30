@@ -236,3 +236,38 @@ export interface UpdateSocialMediaRequest {
 
 export interface SocialMediaResponse extends ApiResponse<SocialMedia> {}
 export interface SocialMediasResponse extends ApiResponse<SocialMedia[]> {}
+
+// Review Types
+export interface Review {
+  id: string;
+  reviewImage: string;
+  platform: string;
+  clientName: string;
+  rating: number;
+  reviewText: string;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+  updatedBy: string;
+}
+
+export interface CreateReviewRequest {
+  platform: string;
+  clientName?: string;
+  rating: number;
+  reviewText?: string;
+  reviewImage?: File;
+}
+
+export interface UpdateReviewRequest {
+  platform?: string;
+  clientName?: string;
+  rating?: number;
+  reviewText?: string;
+  reviewImage?: File;
+}
+
+export interface ReviewResponse extends ApiResponse<Review> {}
+export interface ReviewsResponse extends ApiResponse<Review[]> {}
+export interface ReviewPlatformsResponse extends ApiResponse<string[]> {}
