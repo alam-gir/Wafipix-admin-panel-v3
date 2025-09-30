@@ -97,14 +97,42 @@ export default function ContactsPage() {
   const handleReply = async (data: ContactReplyRequest) => {
     if (!selectedContact) return
 
+    // Create optimistic reply object
+    const optimisticReply = {
+      id: `temp-${Date.now()}`, // Temporary ID
+      message: data.message,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      createdBy: 'You', // Will be updated from API response
+      updatedBy: 'You'
+    }
+
+    // Immediately update UI with optimistic reply
+    const updatedContact = {
+      ...selectedContact,
+      replies: [...(selectedContact.replies || []), optimisticReply],
+      status: 'replied'
+    }
+    
+    setSelectedContact(updatedContact)
+    
+    // Update the contact in the list immediately
+    setContacts(prevContacts => 
+      prevContacts.map(contact => 
+        contact.id === selectedContact.id 
+          ? { ...contact, replies: updatedContact.replies, status: updatedContact.status }
+          : contact
+      )
+    )
+
     try {
       setIsSubmitting(true)
       const response = await contactsApi.replyToContact(selectedContact.id, data)
       if (response.success && response.data) {
-        // Immediately update the selected contact with new reply
+        // Update with real data from API
         setSelectedContact(response.data)
         
-        // Update the contact in the list to reflect the new reply count and status
+        // Update the contact in the list with real data
         setContacts(prevContacts => 
           prevContacts.map(contact => 
             contact.id === selectedContact.id 
@@ -119,6 +147,16 @@ export default function ContactsPage() {
     } catch (error) {
       console.error('Failed to send reply:', error)
       toast.error('Failed to send reply')
+      
+      // Revert optimistic update on error
+      setSelectedContact(selectedContact)
+      setContacts(prevContacts => 
+        prevContacts.map(contact => 
+          contact.id === selectedContact.id 
+            ? { ...contact, replies: selectedContact.replies, status: selectedContact.status }
+            : contact
+        )
+      )
     } finally {
       setIsSubmitting(false)
     }
