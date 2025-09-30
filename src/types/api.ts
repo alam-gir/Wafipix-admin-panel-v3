@@ -212,3 +212,27 @@ export interface CreateAdvertisementVideoRequest {
 }
 
 export interface AdvertisementVideoResponse extends ApiResponse<AdvertisementVideo> {}
+
+// Social Media Types
+export interface SocialMedia {
+  id: string;
+  title: string;
+  url: string;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+  updatedBy: string;
+}
+
+export interface CreateSocialMediaRequest {
+  title: string;
+  url: string;
+}
+
+export interface UpdateSocialMediaRequest {
+  title: string;
+  url: string;
+}
+
+export interface SocialMediaResponse extends ApiResponse<SocialMedia> {}
+export interface SocialMediasResponse extends ApiResponse<SocialMedia[]> {}
