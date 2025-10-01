@@ -14,6 +14,11 @@ import {
   ServiceFAQRequest,
   UpdateServiceFAQsRequest,
   ServiceFAQsResponse,
+  Package,
+  CreatePackageRequest,
+  UpdatePackageRequest,
+  PackageResponse,
+  PackagesResponse,
   ApiResponse
 } from '@/types/api'
 
@@ -104,5 +109,31 @@ export const servicesApi = {
   updateFAQs: async (data: UpdateServiceFAQsRequest): Promise<ServiceFAQsResponse> => {
     const response = await apiService.put<ServiceFAQ[]>('/v3/admin/services/faqs', data)
     return response as ServiceFAQsResponse
+  },
+
+  // Service Packages Management
+  getPackagesByServiceId: async (serviceId: string): Promise<PackagesResponse> => {
+    const response = await apiService.get<Package[]>(`/v3/admin/packages/service/${serviceId}`)
+    return response as PackagesResponse
+  },
+
+  getPackageById: async (packageId: string): Promise<PackageResponse> => {
+    const response = await apiService.get<Package>(`/v3/admin/packages/${packageId}`)
+    return response as PackageResponse
+  },
+
+  createPackage: async (data: CreatePackageRequest): Promise<PackageResponse> => {
+    const response = await apiService.post<Package>('/v3/admin/packages', data)
+    return response as PackageResponse
+  },
+
+  updatePackage: async (packageId: string, data: UpdatePackageRequest): Promise<PackageResponse> => {
+    const response = await apiService.put<Package>(`/v3/admin/packages/${packageId}`, data)
+    return response as PackageResponse
+  },
+
+  deletePackage: async (packageId: string): Promise<ApiResponse> => {
+    const response = await apiService.delete(`/v3/admin/packages/${packageId}`)
+    return response as ApiResponse
   }
 }

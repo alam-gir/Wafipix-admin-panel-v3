@@ -132,11 +132,13 @@ export interface ServicesResponse extends ApiResponse<Service[]> {}
 
 // Service Feature Types
 export interface ServiceFeature {
+  id: string | null;
   text: string;
   highlight: boolean;
 }
 
 export interface ServiceFeatureRequest {
+  id: string | null;
   text: string;
   highlight: boolean;
 }
@@ -150,11 +152,13 @@ export interface ServiceFeaturesResponse extends ApiResponse<ServiceFeature[]> {
 
 // Service FAQ Types
 export interface ServiceFAQ {
+  id: string | null;
   question: string;
   answer: string;
 }
 
 export interface ServiceFAQRequest {
+  id: string | null;
   question: string;
   answer: string;
 }
@@ -165,6 +169,64 @@ export interface UpdateServiceFAQsRequest {
 }
 
 export interface ServiceFAQsResponse extends ApiResponse<ServiceFAQ[]> {}
+
+// Service Package Types
+export interface Package {
+  id: string;
+  serviceId: string;
+  serviceTitle: string;
+  title: string;
+  subtitle?: string;
+  pricing: Pricing;
+  features: Feature[];
+  status: PackageStatus;
+  deliveryTime?: string;
+  advancePercentage?: number;
+  popular?: boolean;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+  updatedBy: string;
+}
+
+export interface Pricing {
+  usd: number;
+  bdt: number;
+}
+
+export interface Feature {
+  text: string;
+  highlight: boolean;
+}
+
+export type PackageStatus = 'ACTIVE' | 'FEATURED' | 'COMING_SOON';
+
+export interface CreatePackageRequest {
+  serviceId: string;
+  title: string;
+  subtitle?: string;
+  pricing: Pricing;
+  features?: Feature[];
+  status: PackageStatus;
+  deliveryTime?: string;
+  advancePercentage?: number;
+  popular?: boolean;
+}
+
+export interface UpdatePackageRequest {
+  serviceId?: string;
+  title: string;
+  subtitle?: string;
+  pricing?: Pricing;
+  features?: Feature[];
+  status?: PackageStatus;
+  deliveryTime?: string;
+  advancePercentage?: number;
+  popular?: boolean;
+}
+
+export interface PackageResponse extends ApiResponse<Package> {}
+export interface PackagesResponse extends ApiResponse<Package[]> {}
 
 // Client Types
 export interface Client {

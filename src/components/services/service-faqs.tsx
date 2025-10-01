@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -18,7 +18,6 @@ import {
   Plus, 
   Trash2, 
   Save, 
-  X, 
   HelpCircle,
   Loader2,
   AlertTriangle,
@@ -43,13 +42,7 @@ export function ServiceFAQs({ service, isOpen, onClose }: ServiceFAQsProps) {
   } | null>(null)
 
   // Load FAQs when dialog opens
-  useEffect(() => {
-    if (isOpen) {
-      loadFAQs()
-    }
-  }, [isOpen, service.id])
-
-  const loadFAQs = async () => {
+  const loadFAQs = useCallback(async () => {
     try {
       setIsLoading(true)
       const response = await servicesApi.getFAQs(service.id)
@@ -64,7 +57,13 @@ export function ServiceFAQs({ service, isOpen, onClose }: ServiceFAQsProps) {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [service.id])
+
+  useEffect(() => {
+    if (isOpen) {
+      loadFAQs()
+    }
+  }, [isOpen, service.id, loadFAQs])
 
   const showAlert = (type: 'success' | 'error', message: string) => {
     setAlert({ type, message })
@@ -72,7 +71,7 @@ export function ServiceFAQs({ service, isOpen, onClose }: ServiceFAQsProps) {
   }
 
   const addFAQ = () => {
-    setFaqs([...faqs, { question: '', answer: '' }])
+    setFaqs([...faqs, { id: null, question: '', answer: '' }])
   }
 
   const updateFAQ = (index: number, field: keyof ServiceFAQ, value: string) => {
@@ -97,6 +96,7 @@ export function ServiceFAQs({ service, isOpen, onClose }: ServiceFAQsProps) {
       const requestData = {
         serviceId: service.id,
         faqs: validFAQs.map(faq => ({
+          id: faq.id,
           question: faq.question.trim(),
           answer: faq.answer.trim()
         }))
@@ -168,7 +168,7 @@ export function ServiceFAQs({ service, isOpen, onClose }: ServiceFAQsProps) {
                 </div>
               ) : faqs.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
-                  No FAQs added yet. Click "Add FAQ" to get started.
+                  No FAQs added yet. Click &quot;Add FAQ&quot; to get started.
                 </div>
               ) : (
                 <div className="space-y-6">

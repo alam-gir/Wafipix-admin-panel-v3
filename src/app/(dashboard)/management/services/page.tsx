@@ -5,6 +5,7 @@ import { ServiceList } from '@/components/services/service-list'
 import { ServiceForm } from '@/components/services/service-form'
 import { ServiceFeatures } from '@/components/services/service-features'
 import { ServiceFAQs } from '@/components/services/service-faqs'
+import { ServicePackages } from '@/components/services/service-packages'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { 
@@ -37,6 +38,7 @@ export default function ServicesPage() {
   // Dialog states
   const [featuresDialogOpen, setFeaturesDialogOpen] = useState(false)
   const [faqsDialogOpen, setFaqsDialogOpen] = useState(false)
+  const [packagesDialogOpen, setPackagesDialogOpen] = useState(false)
 
   // Load data on component mount
   useEffect(() => {
@@ -190,6 +192,11 @@ export default function ServicesPage() {
     setFaqsDialogOpen(true)
   }
 
+  const handleManagePackages = (service: Service) => {
+    setSelectedService(service)
+    setPackagesDialogOpen(true)
+  }
+
   const handleSearch = async (searchRequest: ServiceSearchRequest) => {
     try {
       setIsLoading(true)
@@ -294,6 +301,7 @@ export default function ServicesPage() {
         onToggleActive={handleToggleActive}
         onManageFeatures={handleManageFeatures}
         onManageFAQs={handleManageFAQs}
+        onManagePackages={handleManagePackages}
         isLoading={isLoading}
         onSearch={handleSearch}
       />
@@ -317,6 +325,18 @@ export default function ServicesPage() {
           isOpen={faqsDialogOpen}
           onClose={() => {
             setFaqsDialogOpen(false)
+            setSelectedService(null)
+          }}
+        />
+      )}
+
+      {/* Packages Dialog */}
+      {selectedService && (
+        <ServicePackages
+          service={selectedService}
+          isOpen={packagesDialogOpen}
+          onClose={() => {
+            setPackagesDialogOpen(false)
             setSelectedService(null)
           }}
         />

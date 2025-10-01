@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -18,13 +18,12 @@ import {
   Plus, 
   Trash2, 
   Save, 
-  X, 
   Star,
   Loader2,
   AlertTriangle,
   CheckCircle
 } from 'lucide-react'
-import { Service, ServiceFeature, ServiceFeatureRequest } from '@/types/api'
+import { Service, ServiceFeature } from '@/types/api'
 import { servicesApi } from '@/lib/api/services'
 
 interface ServiceFeaturesProps {
@@ -43,13 +42,7 @@ export function ServiceFeatures({ service, isOpen, onClose }: ServiceFeaturesPro
   } | null>(null)
 
   // Load features when dialog opens
-  useEffect(() => {
-    if (isOpen) {
-      loadFeatures()
-    }
-  }, [isOpen, service.id])
-
-  const loadFeatures = async () => {
+  const loadFeatures = useCallback(async () => {
     try {
       setIsLoading(true)
       const response = await servicesApi.getFeatures(service.id)
@@ -64,7 +57,13 @@ export function ServiceFeatures({ service, isOpen, onClose }: ServiceFeaturesPro
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [service.id])
+
+  useEffect(() => {
+    if (isOpen) {
+      loadFeatures()
+    }
+  }, [isOpen, service.id, loadFeatures])
 
   const showAlert = (type: 'success' | 'error', message: string) => {
     setAlert({ type, message })
@@ -72,7 +71,7 @@ export function ServiceFeatures({ service, isOpen, onClose }: ServiceFeaturesPro
   }
 
   const addFeature = () => {
-    setFeatures([...features, { text: '', highlight: false }])
+    setFeatures([...features, { id: null, text: '', highlight: false }])
   }
 
   const updateFeature = (index: number, field: keyof ServiceFeature, value: string | boolean) => {
@@ -95,6 +94,7 @@ export function ServiceFeatures({ service, isOpen, onClose }: ServiceFeaturesPro
       const requestData = {
         serviceId: service.id,
         features: validFeatures.map(feature => ({
+          id: feature.id,
           text: feature.text.trim(),
           highlight: feature.highlight
         }))
@@ -166,7 +166,7 @@ export function ServiceFeatures({ service, isOpen, onClose }: ServiceFeaturesPro
                 </div>
               ) : features.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
-                  No features added yet. Click "Add Feature" to get started.
+                  No features added yet. Click &quot;Add Feature&quot; to get started.
                 </div>
               ) : (
                 <div className="space-y-4">

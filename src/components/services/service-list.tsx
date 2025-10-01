@@ -30,7 +30,8 @@ import {
   EyeOff,
   Settings,
   Star,
-  HelpCircle
+  HelpCircle,
+  Package
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -47,6 +48,7 @@ interface ServiceListProps {
   onToggleActive: (service: Service) => void
   onManageFeatures: (service: Service) => void
   onManageFAQs: (service: Service) => void
+  onManagePackages: (service: Service) => void
   isLoading?: boolean
   onSearch?: (searchRequest: ServiceSearchRequest) => void
 }
@@ -60,6 +62,7 @@ export function ServiceList({
   onToggleActive,
   onManageFeatures,
   onManageFAQs,
+  onManagePackages,
   isLoading = false,
   onSearch
 }: ServiceListProps) {
@@ -298,6 +301,10 @@ export function ServiceList({
                           <DropdownMenuItem onClick={() => onManageFAQs(service)}>
                             <HelpCircle className="mr-2 h-4 w-4" />
                             Manage FAQs
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => onManagePackages(service)}>
+                            <Package className="mr-2 h-4 w-4" />
+                            Manage Packages
                           </DropdownMenuItem>
                           <DropdownMenuItem 
                             onClick={() => onDelete(service)}
