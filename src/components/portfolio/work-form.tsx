@@ -8,13 +8,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Progress } from '@/components/ui/progress'
 import { Upload, X, Image, Video, FileText } from 'lucide-react'
 import { toast } from 'sonner'
 import { WorkResponse, CreateWorkRequest, UpdateWorkRequest, Service, FileResponse } from '@/types/api'
 import { AxiosProgressEvent } from 'axios'
+import RichTextEditor from '../ui/rich-text-editor'
 
 const workFormSchema = z.object({
   title: z.string().min(1, 'Title is required').max(100, 'Title must not exceed 100 characters'),
@@ -150,6 +151,8 @@ export function WorkForm({ work, services, isOpen, onClose, onSubmit, isLoading 
   }
 
   const handleFormSubmit = async (data: WorkFormData) => {
+    let progressInterval: NodeJS.Timeout | undefined
+    
     try {
       // Validate cover media (at least one required)
       const hasCoverMedia = coverVideo || coverImage || (work && (work.coverVideo || work.coverImage))
@@ -167,6 +170,14 @@ export function WorkForm({ work, services, isOpen, onClose, onSubmit, isLoading 
 
       setIsUploading(true)
       setUploadProgress(0)
+      
+      // Start progress simulation for better UX
+      progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) return prev // Don't go above 90% until real progress
+          return prev + Math.random() * 10
+        })
+      }, 200)
 
       const formData: CreateWorkRequest | UpdateWorkRequest = {
         title: data.title,
@@ -180,30 +191,48 @@ export function WorkForm({ work, services, isOpen, onClose, onSubmit, isLoading 
 
       console.log('Form data being submitted:', formData) // Debug log
 
-      // Real upload progress tracking
+      // Real upload progress tracking with smooth updates
       const config = {
         onUploadProgress: (progressEvent: AxiosProgressEvent) => {
           if (progressEvent.total) {
             const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+            console.log(`Upload progress: ${percentCompleted}% (${progressEvent.loaded}/${progressEvent.total})`)
             setUploadProgress(percentCompleted)
+          } else {
+            // If total is not available, simulate progress
+            const simulatedProgress = Math.min(95, uploadProgress + 10)
+            setUploadProgress(simulatedProgress)
           }
         }
       }
 
       await onSubmit(formData, config) // Pass config for progress tracking
       
-      // Reset form and close modal
-      reset()
-      setCoverVideo(null)
-      setCoverImage(null)
-      setProfileVideo(null)
-      setProfileImage(null)
-      onClose()
+      // Clear the progress simulation
+      clearInterval(progressInterval)
+      
+      // Complete the progress bar
+      setUploadProgress(100)
+      
+      // Small delay to show 100% completion
+      setTimeout(() => {
+        // Reset form and close modal
+        reset()
+        setCoverVideo(null)
+        setCoverImage(null)
+        setProfileVideo(null)
+        setProfileImage(null)
+        onClose()
+      }, 500)
       
     } catch (error) {
       console.error('Form submission error:', error)
       toast.error('Failed to save work')
     } finally {
+      // Clear the progress simulation if it exists
+      if (progressInterval) {
+        clearInterval(progressInterval)
+      }
       setIsUploading(false)
       setUploadProgress(0)
     }
@@ -367,13 +396,11 @@ export function WorkForm({ work, services, isOpen, onClose, onSubmit, isLoading 
 
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                {...register('description')}
-                placeholder="Enter work description"
-                rows={3}
+              <RichTextEditor
+                value={watch('description') || ''}
+                onChange={(content) => setValue('description', content)}
+                placeholder="Enter work description with rich formatting..."
                 className={errors.description ? 'border-red-500' : ''}
-                disabled={isUploading}
               />
               {errors.description && (
                 <p className="text-sm text-red-500">{errors.description.message}</p>

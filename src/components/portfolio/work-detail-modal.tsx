@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { HtmlViewer } from '@/components/ui/html-viewer'
 import { Card, CardContent } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch'
 import { 
@@ -291,7 +292,7 @@ export function WorkDetailModal({
               {work.description && (
                 <div>
                   <h4 className="font-medium mb-2">Description</h4>
-                  <p className="text-sm text-muted-foreground">{work.description}</p>
+                  <HtmlViewer content={work.description} className="text-sm" />
                 </div>
               )}
             </div>

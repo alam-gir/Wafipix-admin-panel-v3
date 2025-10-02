@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { HtmlViewer } from '@/components/ui/html-viewer'
 import { Card, CardContent } from '@/components/ui/card'
 import { Edit, ArrowLeft, Eye, EyeOff } from 'lucide-react'
 import { WorkResponse, Service } from '@/types/api'
@@ -141,7 +142,7 @@ export function WorkDetail({
               {work.description && (
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Description</label>
-                  <p className="text-sm">{work.description}</p>
+                  <HtmlViewer content={work.description} className="text-sm" />
                 </div>
               )}
             </div>

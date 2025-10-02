@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { HtmlViewer } from '@/components/ui/html-viewer'
 import { WorkListResponse, Service } from '@/types/api'
 
 interface WorkListProps {
@@ -130,9 +131,9 @@ export function WorkList({
                   </div>
 
                   {work.description && (
-                    <p className="text-sm text-gray-600 line-clamp-2 mb-3">
-                      {work.description}
-                    </p>
+                    <div className="text-sm text-gray-600 line-clamp-2 mb-3">
+                      <HtmlViewer content={work.description} />
+                    </div>
                   )}
 
                   <div className="flex items-center justify-between">

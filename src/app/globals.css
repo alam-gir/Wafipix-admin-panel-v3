@@ -120,3 +120,388 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* TipTap Editor Styles */
+.ProseMirror {
+  outline: none !important;
+  min-height: 200px !important;
+  height: 100% !important;
+  width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-size: 16px !important;
+  line-height: 1.6 !important;
+  color: oklch(var(--foreground)) !important;
+}
+
+.ProseMirror p {
+  margin: 0 0 1em 0 !important;
+  color: oklch(var(--foreground)) !important;
+}
+
+.ProseMirror p:last-child {
+  margin-bottom: 0 !important;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: oklch(var(--muted-foreground));
+  pointer-events: none;
+  height: 0;
+}
+
+.ProseMirror strong {
+  color: oklch(var(--foreground)) !important;
+  font-weight: 600 !important;
+}
+
+.ProseMirror a {
+  color: oklch(var(--primary)) !important;
+  text-decoration: underline !important;
+}
+
+.ProseMirror a:hover {
+  color: oklch(var(--primary) / 0.8) !important;
+}
+
+.ProseMirror ul, .ProseMirror ol {
+  margin: 1em 0 !important;
+}
+
+.ProseMirror blockquote {
+  border-left: 4px solid oklch(var(--primary)) !important;
+  padding: 0.5em 0.5em 0.5em 1em !important;
+  margin: 1em 0 !important;
+  font-style: italic !important;
+  color: oklch(var(--foreground)) !important;
+  background: oklch(var(--muted) / 0.2) !important;
+  border-radius: 0.25rem !important;
+  display: block !important;
+  position: relative !important;
+}
+
+/* Ensure blockquote is visible with a more prominent style */
+.ProseMirror blockquote::before {
+  content: '"' !important;
+  font-size: 2em !important;
+  color: oklch(var(--primary)) !important;
+  position: absolute !important;
+  left: 0.2em !important;
+  top: -0.1em !important;
+  font-family: serif !important;
+}
+
+.ProseMirror blockquote::after {
+  content: '"' !important;
+  font-size: 2em !important;
+  color: oklch(var(--primary)) !important;
+  position: absolute !important;
+  right: 0.2em !important;
+  bottom: -0.3em !important;
+  font-family: serif !important;
+}
+
+.ProseMirror h1, .ProseMirror h2, .ProseMirror h3 {
+  color: oklch(var(--foreground)) !important;
+  font-weight: 600 !important;
+  margin: 1em 0 0.5em 0 !important;
+}
+
+.ProseMirror h1 {
+  font-size: 1.5em !important;
+}
+
+.ProseMirror h2 {
+  font-size: 1.3em !important;
+}
+
+.ProseMirror h3 {
+  font-size: 1.1em !important;
+}
+
+.ProseMirror code {
+  background: oklch(var(--muted)) !important;
+  padding: 0.2em 0.4em !important;
+  border-radius: 0.25rem !important;
+  font-size: 0.9em !important;
+  color: oklch(var(--foreground)) !important;
+}
+
+.ProseMirror u {
+  text-decoration: underline !important;
+  color: oklch(var(--foreground)) !important;
+}
+
+/* Editor focus states */
+.ProseMirror-focused {
+  outline: none !important;
+}
+
+/* Placeholder styling */
+.ProseMirror .is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: oklch(var(--muted-foreground));
+  pointer-events: none;
+  height: 0;
+}
+
+/* Dark mode specific adjustments */
+.dark .ProseMirror {
+  color: oklch(var(--foreground)) !important;
+}
+
+.dark .ProseMirror p {
+  color: oklch(var(--foreground)) !important;
+}
+
+.dark .ProseMirror li {
+  color: oklch(var(--foreground)) !important;
+}
+
+.dark .ProseMirror blockquote {
+  color: oklch(var(--foreground)) !important;
+  border-left-color: oklch(var(--primary)) !important;
+  background: oklch(var(--muted) / 0.2) !important;
+}
+
+.dark .ProseMirror blockquote::before,
+.dark .ProseMirror blockquote::after {
+  color: oklch(var(--primary)) !important;
+}
+
+.dark .ProseMirror h1, 
+.dark .ProseMirror h2, 
+.dark .ProseMirror h3 {
+  color: oklch(var(--foreground)) !important;
+}
+
+.dark .ProseMirror strong {
+  color: oklch(var(--foreground)) !important;
+}
+
+.dark .ProseMirror code {
+  background: oklch(var(--muted)) !important;
+  color: oklch(var(--foreground)) !important;
+}
+
+/* HTML Viewer Styles - Force proper rendering with high specificity */
+.prose.prose-sm ul,
+.prose ul {
+  list-style-type: disc !important;
+  list-style-position: outside !important;
+  padding-left: 1.5em !important;
+  margin: 1em 0 !important;
+  color: oklch(var(--foreground)) !important;
+}
+
+.prose.prose-sm ol,
+.prose ol {
+  list-style-type: decimal !important;
+  list-style-position: outside !important;
+  padding-left: 1.5em !important;
+  margin: 1em 0 !important;
+  color: oklch(var(--foreground)) !important;
+}
+
+.prose.prose-sm li,
+.prose li {
+  display: list-item !important;
+  list-style-position: outside !important;
+  margin: 0.25em 0 !important;
+  color: oklch(var(--foreground)) !important;
+}
+
+.prose.prose-sm blockquote,
+.prose blockquote {
+  border-left: 4px solid oklch(var(--primary)) !important;
+  padding: 0.5em 0.5em 0.5em 1em !important;
+  margin: 1em 0 !important;
+  font-style: italic !important;
+  color: oklch(var(--foreground)) !important;
+  background: oklch(var(--muted) / 0.2) !important;
+  border-radius: 0.25rem !important;
+  position: relative !important;
+}
+
+.prose.prose-sm blockquote::before,
+.prose blockquote::before {
+  content: '"' !important;
+  font-size: 2em !important;
+  color: oklch(var(--primary)) !important;
+  position: absolute !important;
+  left: 0.2em !important;
+  top: -0.1em !important;
+  font-family: serif !important;
+}
+
+.prose.prose-sm blockquote::after,
+.prose blockquote::after {
+  content: '"' !important;
+  font-size: 2em !important;
+  color: oklch(var(--primary)) !important;
+  position: absolute !important;
+  right: 0.2em !important;
+  bottom: -0.3em !important;
+  font-family: serif !important;
+}
+
+.prose.prose-sm p,
+.prose p {
+  color: oklch(var(--foreground)) !important;
+  margin: 0 0 1em 0 !important;
+}
+
+.prose.prose-sm p:last-child,
+.prose p:last-child {
+  margin-bottom: 0 !important;
+}
+
+.prose.prose-sm strong,
+.prose strong {
+  color: oklch(var(--foreground)) !important;
+  font-weight: 600 !important;
+}
+
+.prose.prose-sm a,
+.prose a {
+  color: oklch(var(--primary)) !important;
+  text-decoration: underline !important;
+}
+
+.prose.prose-sm a:hover,
+.prose a:hover {
+  color: oklch(var(--primary) / 0.8) !important;
+}
+
+/* Custom HTML Viewer Styles - Override everything */
+.html-viewer {
+  color: oklch(var(--foreground)) !important;
+  line-height: 1.6 !important;
+}
+
+.html-viewer p {
+  color: oklch(var(--foreground)) !important;
+  margin: 0 0 1em 0 !important;
+  line-height: 1.6 !important;
+}
+
+.html-viewer p:last-child {
+  margin-bottom: 0 !important;
+}
+
+.html-viewer strong {
+  color: oklch(var(--foreground)) !important;
+  font-weight: 600 !important;
+}
+
+.html-viewer em {
+  color: oklch(var(--foreground)) !important;
+  font-style: italic !important;
+}
+
+.html-viewer ul {
+  list-style-type: disc !important;
+  list-style-position: outside !important;
+  padding-left: 1.5em !important;
+  margin: 1em 0 !important;
+  color: oklch(var(--foreground)) !important;
+}
+
+.html-viewer ol {
+  list-style-type: decimal !important;
+  list-style-position: outside !important;
+  padding-left: 1.5em !important;
+  margin: 1em 0 !important;
+  color: oklch(var(--foreground)) !important;
+}
+
+.html-viewer li {
+  display: list-item !important;
+  list-style-position: outside !important;
+  margin: 0.25em 0 !important;
+  color: oklch(var(--foreground)) !important;
+}
+
+.html-viewer blockquote {
+  border-left: 4px solid oklch(var(--primary)) !important;
+  padding: 0.5em 0.5em 0.5em 1em !important;
+  margin: 1em 0 !important;
+  font-style: italic !important;
+  color: oklch(var(--foreground)) !important;
+  background: oklch(var(--muted) / 0.2) !important;
+  border-radius: 0.25rem !important;
+  position: relative !important;
+}
+
+.html-viewer blockquote::before {
+  content: '"' !important;
+  font-size: 2em !important;
+  color: oklch(var(--primary)) !important;
+  position: absolute !important;
+  left: 0.2em !important;
+  top: -0.1em !important;
+  font-family: serif !important;
+}
+
+.html-viewer blockquote::after {
+  content: '"' !important;
+  font-size: 2em !important;
+  color: oklch(var(--primary)) !important;
+  position: absolute !important;
+  right: 0.2em !important;
+  bottom: -0.3em !important;
+  font-family: serif !important;
+}
+
+.html-viewer a {
+  color: oklch(var(--primary)) !important;
+  text-decoration: underline !important;
+}
+
+.html-viewer a:hover {
+  color: oklch(var(--primary) / 0.8) !important;
+}
+
+.html-viewer code {
+  background: oklch(var(--muted)) !important;
+  padding: 0.2em 0.4em !important;
+  border-radius: 0.25rem !important;
+  font-size: 0.9em !important;
+  color: oklch(var(--foreground)) !important;
+}
+
+.html-viewer h1,
+.html-viewer h2,
+.html-viewer h3,
+.html-viewer h4,
+.html-viewer h5,
+.html-viewer h6 {
+  color: oklch(var(--foreground)) !important;
+  font-weight: 600 !important;
+  margin: 1em 0 0.5em 0 !important;
+}
+
+.html-viewer h1 { font-size: 1.5em !important; }
+.html-viewer h2 { font-size: 1.3em !important; }
+.html-viewer h3 { font-size: 1.1em !important; }
+
+/* List styling - use native list styles only */
+.ProseMirror ul {
+  list-style-type: disc !important;
+  list-style-position: outside !important;
+  padding-left: 1.5em !important;
+}
+
+.ProseMirror ol {
+  list-style-type: decimal !important;
+  list-style-position: outside !important;
+  padding-left: 1.5em !important;
+}
+
+.ProseMirror li {
+  display: list-item !important;
+  list-style-position: outside !important;
+  margin: 0.25em 0 !important;
+}
