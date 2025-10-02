@@ -141,6 +141,13 @@ export const NAVIGATION_CONFIG = {
       roles: [ROLES.ADMIN, ROLES.MANAGER]
     },
     {
+      name: 'Portfolio',
+      href: '/management/portfolio',
+      icon: 'Briefcase',
+      permission: PERMISSIONS.PROFILE_VIEW,
+      roles: [ROLES.ADMIN, ROLES.MANAGER]
+    },
+    {
       name: 'Trusted Clients',
       href: '/management/clients',
       icon: 'Users',
