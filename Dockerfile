@@ -21,6 +21,9 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+# Copy environment file for build-time variables
+COPY .env.local .env.local
+
 # Install pnpm globally in builder stage if needed
 RUN if [ -f pnpm-lock.yaml ]; then npm install -g pnpm; fi
 
@@ -42,9 +45,6 @@ WORKDIR /app
 ENV NODE_ENV=production
 # Uncomment the following line in case you want to disable telemetry during runtime.
 ENV NEXT_TELEMETRY_DISABLED=1
-
-# API URL for backend communication
-ENV NEXT_PUBLIC_API_URL=http://localhost:8080/
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
