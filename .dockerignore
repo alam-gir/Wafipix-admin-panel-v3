@@ -111,5 +111,3 @@ temp/
 *.sln
 *.sw?
 
-# Local development files
-*.local
