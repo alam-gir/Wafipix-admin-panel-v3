@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -19,15 +19,13 @@ import {
   Plus, 
   Trash2, 
   Save, 
-  X, 
   Package,
   Loader2,
   AlertTriangle,
   CheckCircle,
-  Edit,
-  Eye
+  Edit
 } from 'lucide-react'
-import { Service, Package as ServicePackage, CreatePackageRequest, UpdatePackageRequest, Pricing, Feature, PackageStatus } from '@/types/api'
+import { Service, Package as ServicePackage, CreatePackageRequest, UpdatePackageRequest, Pricing, Feature } from '@/types/api'
 import { servicesApi } from '@/lib/api/services'
 
 interface ServicePackagesProps {
@@ -63,14 +61,7 @@ export function ServicePackages({ service, isOpen, onClose }: ServicePackagesPro
     popular: false
   })
 
-  // Load packages when dialog opens
-  useEffect(() => {
-    if (isOpen) {
-      loadPackages()
-    }
-  }, [isOpen, service.id])
-
-  const loadPackages = async () => {
+  const loadPackages = useCallback(async () => {
     try {
       setIsLoading(true)
       const response = await servicesApi.getPackagesByServiceId(service.id)
@@ -85,7 +76,14 @@ export function ServicePackages({ service, isOpen, onClose }: ServicePackagesPro
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [service.id])
+
+  // Load packages when dialog opens
+  useEffect(() => {
+    if (isOpen) {
+      loadPackages()
+    }
+  }, [isOpen, service.id, loadPackages])
 
   const showAlert = (type: 'success' | 'error', message: string) => {
     setAlert({ type, message })
@@ -136,14 +134,18 @@ export function ServicePackages({ service, isOpen, onClose }: ServicePackagesPro
     resetForm()
   }
 
-  const updateFormData = (field: string, value: any) => {
+  const updateFormData = (field: string, value: unknown) => {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
-  const updatePricing = (field: keyof Pricing, value: any) => {
+  const updatePricing = (field: keyof Pricing, value: number) => {
     setFormData(prev => ({
       ...prev,
-      pricing: { ...prev.pricing, [field]: value }
+      pricing: { 
+        usd: prev.pricing?.usd || 0, 
+        bdt: prev.pricing?.bdt || 0, 
+        [field]: value 
+      }
     }))
   }
 
@@ -375,7 +377,7 @@ export function ServicePackages({ service, isOpen, onClose }: ServicePackagesPro
                       <Input
                         id="usd"
                         type="number"
-                        value={formData.pricing.usd}
+                        value={formData.pricing?.usd || 0}
                         onChange={(e) => updatePricing('usd', parseFloat(e.target.value) || 0)}
                         placeholder="0.00"
                       />
@@ -385,7 +387,7 @@ export function ServicePackages({ service, isOpen, onClose }: ServicePackagesPro
                       <Input
                         id="bdt"
                         type="number"
-                        value={formData.pricing.bdt}
+                        value={formData.pricing?.bdt || 0}
                         onChange={(e) => updatePricing('bdt', parseFloat(e.target.value) || 0)}
                         placeholder="0.00"
                       />

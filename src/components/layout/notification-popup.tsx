@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Bell, X, CheckCircle, AlertCircle, Info, Clock } from 'lucide-react'
+import { Bell, CheckCircle, AlertCircle, Info, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -10,7 +10,6 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Separator } from '@/components/ui/separator'
 
 interface Notification {
   id: string
@@ -185,7 +184,7 @@ export function NotificationPopup() {
             ) : (
               <ScrollArea className="h-[400px]">
                 <div className="p-3 space-y-3">
-                  {notifications.map((notification, index) => (
+                  {notifications.map((notification) => (
                     <div key={notification.id}>
                       <div
                         className={`p-4 rounded-lg border cursor-pointer transition-all duration-200 hover:shadow-md ${

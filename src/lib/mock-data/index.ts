@@ -1,4 +1,4 @@
-import { LoginResponse, User } from '../api/auth'
+import { User } from '../api/auth'
 import { DashboardMetrics, ChartData, TodayReport } from '../api/dashboard'
 import { UsersResponse } from '../api/users'
 import { Role, Permission } from '../api/roles'
@@ -10,9 +10,8 @@ const mockUsers: User[] = [
     email: 'admin@example.com',
     firstName: 'John',
     lastName: 'Doe',
+    phone: '+1234567890',
     role: 'admin',
-    permissions: ['*'],
-    avatar: '/avatars/admin.jpg',
     isActive: true,
     createdAt: '2024-01-01T00:00:00Z',
     updatedAt: '2024-01-01T00:00:00Z'
@@ -22,9 +21,8 @@ const mockUsers: User[] = [
     email: 'manager@example.com',
     firstName: 'Jane',
     lastName: 'Smith',
+    phone: '+1234567891',
     role: 'manager',
-    permissions: ['dashboard:view', 'users:view', 'users:edit'],
-    avatar: '/avatars/manager.jpg',
     isActive: true,
     createdAt: '2024-01-02T00:00:00Z',
     updatedAt: '2024-01-02T00:00:00Z'
@@ -34,9 +32,8 @@ const mockUsers: User[] = [
     email: 'user@example.com',
     firstName: 'Bob',
     lastName: 'Johnson',
+    phone: '+1234567892',
     role: 'user',
-    permissions: ['dashboard:view'],
-    avatar: '/avatars/user.jpg',
     isActive: true,
     createdAt: '2024-01-03T00:00:00Z',
     updatedAt: '2024-01-03T00:00:00Z'
@@ -186,22 +183,21 @@ const mockTodayReport: TodayReport = {
   clients: 1
 }
 
-export function getMockResponse<T>(url: string, data?: any): T {
+export function getMockResponse<T>(url: string, data?: unknown): Promise<T> {
   // Simulate API delay
   const delay = Math.random() * 1000 + 500
   
   return new Promise((resolve) => {
     setTimeout(() => {
-      let response: any
+      let response: unknown
 
       switch (true) {
         case url.includes('/auth/login'):
           response = {
             token: 'mock-jwt-token',
             user: mockUsers[0],
-            permissions: mockUsers[0].permissions,
             roles: [mockUsers[0].role]
-          } as LoginResponse
+          }
           break
 
         case url.includes('/auth/me'):
@@ -230,7 +226,7 @@ export function getMockResponse<T>(url: string, data?: any): T {
           } as UsersResponse
           break
 
-        case url.includes('/users/') && !url.includes('/users?') && !url.includes('/users/' + data?.id):
+        case url.includes('/users/') && !url.includes('/users?') && !url.includes('/users/' + (data as { id?: string })?.id):
           const userId = url.split('/users/')[1]
           response = mockUsers.find(u => u.id === userId) || mockUsers[0]
           break

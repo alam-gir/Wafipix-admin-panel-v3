@@ -6,11 +6,12 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import Image from 'next/image'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Star, Edit, Trash2, Eye, EyeOff, Save, X, Upload } from 'lucide-react'
 import { toast } from 'sonner'
-import { Review, CreateReviewRequest, UpdateReviewRequest } from '@/types/api'
+import { Review, UpdateReviewRequest } from '@/types/api'
 import { reviewsApi } from '@/lib/api/reviews'
 
 interface UnifiedReviewModalProps {
@@ -167,7 +168,9 @@ export function UnifiedReviewModal({
   }
 
   const handleDelete = () => {
-    onDelete(review.id)
+    if (review) {
+      onDelete(review.id)
+    }
   }
 
   if (!review) return null
@@ -188,9 +191,11 @@ export function UnifiedReviewModal({
           {/* Review Image */}
           {(review.reviewImage || previewUrl) && (
             <div className="w-full">
-              <img
+              <Image
                 src={previewUrl || review.reviewImage}
                 alt="Review"
+                width={400}
+                height={256}
                 className="w-full h-64 object-cover rounded-lg"
               />
               {isEditing && (
@@ -332,7 +337,7 @@ export function UnifiedReviewModal({
               ) : (
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <blockquote className="text-gray-700 italic">
-                    "{review.reviewText || 'No review text provided'}"
+                    &ldquo;{review.reviewText || 'No review text provided'}&rdquo;
                   </blockquote>
                 </div>
               )}

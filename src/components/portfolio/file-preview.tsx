@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { X } from 'lucide-react'
+import Image from 'next/image'
 
 interface FilePreviewProps {
   file: File
@@ -22,9 +23,11 @@ export function FilePreview({ file, index, onRemove }: FilePreviewProps) {
             controls
           />
         ) : (
-          <img
+          <Image
             src={URL.createObjectURL(file)}
             alt={file.name}
+            width={200}
+            height={200}
             className="w-full h-auto object-cover"
           />
         )}

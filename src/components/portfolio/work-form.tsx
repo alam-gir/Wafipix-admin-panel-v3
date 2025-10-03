@@ -8,10 +8,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import Image from 'next/image'
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Progress } from '@/components/ui/progress'
-import { Upload, X, Image, Video, FileText } from 'lucide-react'
+import { Upload, X, ImageIcon, Video, FileText } from 'lucide-react'
 import { toast } from 'sonner'
 import { WorkResponse, CreateWorkRequest, UpdateWorkRequest, Service, FileResponse } from '@/types/api'
 import { AxiosProgressEvent } from 'axios'
@@ -254,7 +255,7 @@ export function WorkForm({ work, services, isOpen, onClose, onSubmit, isLoading 
     existingFile?: FileResponse
   ) => {
     const isVideo = type.includes('Video')
-    const Icon = isVideo ? Video : Image
+    const Icon = isVideo ? Video : ImageIcon
 
     return (
       <div className="space-y-2">
@@ -273,9 +274,11 @@ export function WorkForm({ work, services, isOpen, onClose, onSubmit, isLoading 
                   controls
                 />
               ) : (
-                <img
+                <Image
                   src={existingFile.publicUrl}
                   alt={existingFile.fileName}
+                  width={200}
+                  height={200}
                   className="w-full h-full object-cover"
                 />
               )}
@@ -326,9 +329,11 @@ export function WorkForm({ work, services, isOpen, onClose, onSubmit, isLoading 
                   controls
                 />
               ) : (
-                <img
+                <Image
                   src={URL.createObjectURL(currentFile)}
                   alt={currentFile.name}
+                  width={200}
+                  height={200}
                   className="w-full h-full object-cover"
                 />
               )}

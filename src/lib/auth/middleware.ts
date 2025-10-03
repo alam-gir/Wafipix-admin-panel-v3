@@ -55,7 +55,7 @@ export function getRedirectUrl(searchParams: URLSearchParams): string {
  */
 export interface AuthContextType {
   isAuthenticated: boolean
-  user: any | null
+  user: unknown | null
   login: (email: string) => Promise<void>
   verifyOtp: (email: string, otp: string) => Promise<void>
   logout: () => Promise<void>

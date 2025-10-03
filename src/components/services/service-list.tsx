@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import Image from 'next/image'
 import { 
   Table, 
   TableBody, 
@@ -26,9 +27,6 @@ import {
   Search,
   Calendar,
   User,
-  Eye,
-  EyeOff,
-  Settings,
   Star,
   HelpCircle,
   Package
@@ -241,9 +239,11 @@ export function ServiceList({
                       <div className="flex items-center space-x-3">
                         {service.icon && (
                           <div className="w-10 h-10 rounded-lg overflow-hidden bg-muted">
-                            <img
+                            <Image
                               src={service.icon}
                               alt={service.title}
+                              width={40}
+                              height={40}
                               className="w-full h-full object-cover"
                             />
                           </div>

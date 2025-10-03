@@ -24,7 +24,7 @@ interface MessageComposerProps {
   isLoading?: boolean
 }
 
-export function MessageComposer({ contactId, onSubmit, isLoading = false }: MessageComposerProps) {
+export function MessageComposer({ onSubmit, isLoading = false }: MessageComposerProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const {

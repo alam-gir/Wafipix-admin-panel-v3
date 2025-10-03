@@ -1,7 +1,6 @@
 import { apiService } from './index'
 import { ApiErrorHandler } from './error-handler'
 import {
-  ApiResponse,
   ContactResponse,
   ContactReplyRequest,
   ContactsResponse,

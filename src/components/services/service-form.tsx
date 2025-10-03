@@ -7,11 +7,12 @@ import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import Image from 'next/image'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Loader2, Save, X, Upload, Image } from 'lucide-react'
+import { Loader2, Save, X } from 'lucide-react'
 import { Service, CreateServiceRequest, UpdateServiceRequest, Category } from '@/types/api'
 import { categoriesApi } from '@/lib/api/categories'
 
@@ -245,9 +246,11 @@ export function ServiceForm({ service, onSubmit, onCancel, isLoading = false }: 
                 />
                 {previewUrl && (
                   <div className="relative w-20 h-20 border rounded-lg overflow-hidden">
-                    <img
+                    <Image
                       src={previewUrl}
                       alt="Icon preview"
+                      width={80}
+                      height={80}
                       className="w-full h-full object-cover"
                     />
                   </div>

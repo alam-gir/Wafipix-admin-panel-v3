@@ -1,22 +1,23 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { HtmlViewer } from '@/components/ui/html-viewer'
 import { Card, CardContent } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
+import Image from 'next/image'
 import { 
   Edit, 
   Trash2, 
   Eye, 
   EyeOff, 
   Plus, 
-  Image, 
+  ImageIcon, 
   Video, 
   Grid3X3, 
-  List,
   X,
   Upload
 } from 'lucide-react'
@@ -44,7 +45,6 @@ export function WorkDetailModal({
   onEdit,
   onDelete,
   onToggleActive,
-  onUpdateWork,
   isSubmitting = false
 }: WorkDetailModalProps) {
   const [galleries, setGalleries] = useState<GalleryResponse[]>([])
@@ -54,14 +54,7 @@ export function WorkDetailModal({
   const [isMobileGrid, setIsMobileGrid] = useState(false)
   const [uploadingGallery, setUploadingGallery] = useState(false)
 
-  // Load galleries when work changes
-  useEffect(() => {
-    if (work && isOpen) {
-      loadGalleries()
-    }
-  }, [work, isOpen])
-
-  const loadGalleries = async () => {
+  const loadGalleries = useCallback(async () => {
     if (!work) return
 
     try {
@@ -76,7 +69,14 @@ export function WorkDetailModal({
     } finally {
       setLoadingGalleries(false)
     }
-  }
+  }, [work])
+
+  // Load galleries when work changes
+  useEffect(() => {
+    if (work && isOpen) {
+      loadGalleries()
+    }
+  }, [work, isOpen, loadGalleries])
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
@@ -149,11 +149,12 @@ export function WorkDetailModal({
     return service?.title || 'Unknown Service'
   }
 
-  const renderMediaPreview = (file: any, type: 'cover' | 'profile') => {
+  const renderMediaPreview = (file: unknown, type: 'cover' | 'profile') => {
     if (!file) return null
 
-    const isVideo = file.mimeType?.startsWith('video/')
-    const Icon = isVideo ? Video : Image
+    const fileObj = file as { mimeType?: string; url?: string; fileName?: string }
+    const isVideo = fileObj.mimeType?.startsWith('video/')
+    const Icon = isVideo ? Video : ImageIcon
 
     return (
       <div className="space-y-2">
@@ -164,19 +165,21 @@ export function WorkDetailModal({
         <div className="w-full h-32 bg-gray-100 rounded-lg overflow-hidden">
           {isVideo ? (
             <video
-              src={file.url}
+              src={fileObj.url || ''}
               className="w-full h-full object-cover"
               controls
             />
           ) : (
-            <img
-              src={file.url}
-              alt={file.fileName}
+            <Image
+              src={fileObj.url || ''}
+              alt={fileObj.fileName || 'Media file'}
+              width={200}
+              height={200}
               className="w-full h-full object-cover"
             />
           )}
         </div>
-        <p className="text-xs text-muted-foreground truncate">{file.fileName}</p>
+        <p className="text-xs text-muted-foreground truncate">{fileObj.fileName || 'Unknown file'}</p>
       </div>
     )
   }
@@ -223,14 +226,16 @@ export function WorkDetailModal({
                 <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
                   {isVideo ? (
                     <video
-                      src={item.file.url}
+                      src={item.file.publicUrl || ''}
                       className="w-full h-full object-cover"
                       controls
                     />
                   ) : (
-                    <img
-                      src={item.file.url}
+                    <Image
+                      src={item.file.publicUrl || ''}
                       alt={item.file.fileName}
+                      width={200}
+                      height={200}
                       className="w-full h-full object-cover"
                     />
                   )}

@@ -3,9 +3,7 @@ import { ApiErrorHandler } from './error-handler'
 import { AxiosProgressEvent } from 'axios'
 import { 
   ApiResponse, 
-  AdvertisementVideo,
-  CreateAdvertisementVideoRequest,
-  AdvertisementVideoResponse
+  AdvertisementVideo
 } from '@/types/api'
 
 export const advertisementVideosApi = {

@@ -74,12 +74,6 @@ export const PERMISSIONS = {
   PAYMENTS_EDIT: 'payments:edit',
   PAYMENTS_DELETE: 'payments:delete',
   
-  // Contacts
-  CONTACTS_VIEW: 'contacts:view',
-  CONTACTS_CREATE: 'contacts:create',
-  CONTACTS_EDIT: 'contacts:edit',
-  CONTACTS_DELETE: 'contacts:delete',
-  
   // Marketing
   MARKETING_VIEW: 'marketing:view',
   MARKETING_CREATE: 'marketing:create',

@@ -1,9 +1,7 @@
 'use client'
 
-import { StatsGrid } from '@/components/dashboard/stats-grid'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
 import { 
   BarChart3, 
   Calendar,
@@ -29,7 +27,7 @@ export default function DashboardPage() {
       <div className="space-y-2">
         <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Wafipix Dashboard</h1>
         <p className="text-sm lg:text-base text-muted-foreground">
-          Welcome back! Here's what's happening with your design agency today.
+          Welcome back! Here&apos;s what&apos;s happening with your design agency today.
         </p>
       </div>
 
@@ -296,12 +294,12 @@ export default function DashboardPage() {
           <CardHeader>
             <CardTitle className="text-lg font-semibold flex items-center">
               <Calendar className="mr-2 h-5 w-5" />
-              Today's Report
+              Today&apos;s Report
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-4">
-              Overview of today's design agency performance
+              Overview of today&apos;s design agency performance
             </p>
             <p className="text-sm font-medium mb-6">
               Sunday, September 14, 2025
@@ -311,7 +309,7 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors duration-200">
                 <div className="flex items-center space-x-2">
                   <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">Today's Revenue</span>
+                  <span className="text-sm">Today&apos;s Revenue</span>
                 </div>
                 <span className="font-semibold">$8,500</span>
               </div>
@@ -319,7 +317,7 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors duration-200">
                 <div className="flex items-center space-x-2">
                   <DollarSign className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">Today's Profit</span>
+                  <span className="text-sm">Today&apos;s Profit</span>
                 </div>
                 <span className="font-semibold">$6,200</span>
               </div>

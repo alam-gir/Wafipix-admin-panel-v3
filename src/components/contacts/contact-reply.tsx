@@ -25,7 +25,7 @@ interface ContactReplyProps {
   isLoading?: boolean
 }
 
-export function ContactReply({ contactId, onSubmit, isLoading = false }: ContactReplyProps) {
+export function ContactReply({ onSubmit, isLoading = false }: ContactReplyProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const {

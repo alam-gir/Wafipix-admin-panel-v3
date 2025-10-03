@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { authApi } from '@/lib/api/auth'
-import { User, ApiResponse, AuthError } from '@/types/api'
+import { User } from '@/types/api'
 import { toast } from 'sonner'
 
 interface AuthContextType {
@@ -72,9 +72,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       } else {
         throw new Error(response.message || 'Failed to send OTP')
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Login failed:', error)
-      const errorMessage = error.response?.data?.message || error.message || 'Failed to send OTP'
+      const errorMessage = error instanceof Error ? error.message : 'Failed to send OTP'
       toast.error(errorMessage)
       throw error
     } finally {
@@ -88,20 +88,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const response = await authApi.verifyOtp(email, otp)
       
       if (response.success && response.data) {
-        const { user: userData, accessToken, refreshToken } = response.data
-        
         // Tokens are automatically set by the backend via cookies
-        // We also get them in the response for immediate use
-        setUser(userData)
-        setIsAuthenticated(true)
-        
-        toast.success('Login successful!')
+        // Now we need to get the user data separately
+        const userResponse = await authApi.getCurrentUser()
+        if (userResponse.success && userResponse.data) {
+          setUser(userResponse.data)
+          setIsAuthenticated(true)
+          toast.success('Login successful!')
+        } else {
+          throw new Error('Failed to get user data after login')
+        }
       } else {
         throw new Error(response.message || 'Invalid OTP')
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('OTP verification failed:', error)
-      const errorMessage = error.response?.data?.message || error.message || 'Invalid OTP'
+      const errorMessage = error instanceof Error ? error.message : 'Invalid OTP'
       toast.error(errorMessage)
       throw error
     } finally {

@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { X } from 'lucide-react'
+import Image from 'next/image'
 import { FileResponse } from '@/types/api'
 
 interface GalleryItemProps {
@@ -26,9 +27,11 @@ export function GalleryItem({ item, onRemove, isSubmitting = false }: GalleryIte
             controls
           />
         ) : (
-          <img
+          <Image
             src={item.file.publicUrl}
             alt={item.file.fileName}
+            width={200}
+            height={200}
             className="w-full h-auto object-cover"
           />
         )}

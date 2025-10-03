@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import { AxiosProgressEvent } from 'axios'
 import { toast } from 'sonner'
@@ -8,6 +8,7 @@ import { Plus, Upload, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
+import Image from 'next/image'
 import { WorkResponse, GalleryResponse, Service, UpdateWorkRequest } from '@/types/api'
 import { portfolioApi } from '@/lib/api/portfolio'
 import { servicesApi } from '@/lib/api/services'
@@ -31,20 +32,7 @@ export default function PortfolioDetailPage() {
   const [uploadingGallery, setUploadingGallery] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
 
-  useEffect(() => {
-    if (workId) {
-      loadWork()
-      loadServices()
-    }
-  }, [workId])
-
-  useEffect(() => {
-    if (work) {
-      loadGalleries()
-    }
-  }, [work])
-
-  const loadWork = async () => {
+  const loadWork = useCallback(async () => {
     try {
       setLoading(true)
       const response = await portfolioApi.getById(workId)
@@ -57,9 +45,9 @@ export default function PortfolioDetailPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [workId])
 
-  const loadServices = async () => {
+  const loadServices = useCallback(async () => {
     try {
       const response = await servicesApi.getAll()
       if (response.success && response.data) {
@@ -68,9 +56,9 @@ export default function PortfolioDetailPage() {
     } catch (error) {
       console.error('Failed to load services:', error)
     }
-  }
+  }, [])
 
-  const loadGalleries = async () => {
+  const loadGalleries = useCallback(async () => {
     if (!work) return
 
     try {
@@ -82,7 +70,20 @@ export default function PortfolioDetailPage() {
       console.error('Failed to load galleries:', error)
       toast.error('Failed to load galleries')
     }
-  }
+  }, [work])
+
+  useEffect(() => {
+    if (workId) {
+      loadWork()
+      loadServices()
+    }
+  }, [workId, loadWork, loadServices])
+
+  useEffect(() => {
+    if (work) {
+      loadGalleries()
+    }
+  }, [work, loadGalleries])
 
   const handleEditWork = async (data: UpdateWorkRequest, config?: { onUploadProgress?: (progressEvent: AxiosProgressEvent) => void }) => {
     if (!work) return
@@ -372,9 +373,11 @@ export default function PortfolioDetailPage() {
                                 controls
                               />
                             ) : (
-                              <img
+                              <Image
                                 src={URL.createObjectURL(file)}
                                 alt={file.name}
+                                width={200}
+                                height={200}
                                 className="w-full h-auto object-cover"
                               />
                             )}

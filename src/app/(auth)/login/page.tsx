@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -21,7 +21,7 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>
 
-export default function LoginPage() {
+function LoginContent() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
@@ -46,8 +46,8 @@ export default function LoginPage() {
       // Redirect to OTP verification page with redirect URL
       const redirectUrl = searchParams.get('redirect') || '/dashboard'
       router.push(`/verify-otp?email=${encodeURIComponent(data.email)}&redirect=${encodeURIComponent(redirectUrl)}`)
-    } catch (error: any) {
-      setError(error.message || 'Failed to send OTP. Please try again.')
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : 'Failed to send OTP. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
@@ -77,7 +77,7 @@ export default function LoginPage() {
               Admin Portal Access
             </CardTitle>
             <CardDescription className="text-center">
-              We'll send you a secure code to verify your identity
+              We&apos;ll send you a secure code to verify your identity
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -150,6 +150,25 @@ export default function LoginPage() {
       </div>
       </div>
     </AuthWrapper>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-4">
+        <Card className="w-full max-w-md">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent mx-auto mb-4"></div>
+              <p className="text-sm text-slate-600">Loading...</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   )
 }
 

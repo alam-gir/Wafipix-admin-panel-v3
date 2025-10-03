@@ -1,5 +1,6 @@
 import { apiService } from './index'
 import { User } from './auth'
+import { ApiResponse } from '@/types/api'
 
 export interface CreateUserRequest {
   email: string
@@ -35,7 +36,7 @@ export interface UsersResponse {
 }
 
 export const usersApi = {
-  getUsers: async (filters?: UserFilters): Promise<UsersResponse> => {
+  getUsers: async (filters?: UserFilters): Promise<ApiResponse<UsersResponse>> => {
     const params = new URLSearchParams()
     if (filters?.search) params.append('search', filters.search)
     if (filters?.role) params.append('role', filters.role)
@@ -47,27 +48,27 @@ export const usersApi = {
     return apiService.get<UsersResponse>(`/users${queryString ? `?${queryString}` : ''}`)
   },
 
-  getUser: async (id: string): Promise<User> => {
+  getUser: async (id: string): Promise<ApiResponse<User>> => {
     return apiService.get<User>(`/users/${id}`)
   },
 
-  createUser: async (user: CreateUserRequest): Promise<User> => {
+  createUser: async (user: CreateUserRequest): Promise<ApiResponse<User>> => {
     return apiService.post<User>('/users', user)
   },
 
-  updateUser: async (id: string, user: UpdateUserRequest): Promise<User> => {
+  updateUser: async (id: string, user: UpdateUserRequest): Promise<ApiResponse<User>> => {
     return apiService.put<User>(`/users/${id}`, user)
   },
 
-  deleteUser: async (id: string): Promise<void> => {
+  deleteUser: async (id: string): Promise<ApiResponse<void>> => {
     return apiService.delete<void>(`/users/${id}`)
   },
 
-  toggleUserStatus: async (id: string): Promise<User> => {
+  toggleUserStatus: async (id: string): Promise<ApiResponse<User>> => {
     return apiService.put<User>(`/users/${id}/toggle-status`)
   },
 
-  resetUserPassword: async (id: string): Promise<{ temporaryPassword: string }> => {
+  resetUserPassword: async (id: string): Promise<ApiResponse<{ temporaryPassword: string }>> => {
     return apiService.post<{ temporaryPassword: string }>(`/users/${id}/reset-password`)
   }
 }

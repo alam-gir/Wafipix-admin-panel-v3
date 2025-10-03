@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { HtmlViewer } from '@/components/ui/html-viewer'
 import { Card, CardContent } from '@/components/ui/card'
 import { Edit, ArrowLeft, Eye, EyeOff } from 'lucide-react'
+import Image from 'next/image'
 import { WorkResponse, Service } from '@/types/api'
 
 interface WorkDetailProps {
@@ -21,7 +22,6 @@ export function WorkDetail({
   services, 
   onEdit, 
   onToggleActive, 
-  onDelete, 
   isSubmitting = false 
 }: WorkDetailProps) {
   const getServiceName = (serviceId: string) => {
@@ -29,29 +29,32 @@ export function WorkDetail({
     return service?.title || 'Unknown Service'
   }
 
-  const renderMediaPreview = (file: any, type: 'cover' | 'profile') => {
-    if (!file || !file.publicUrl) return null
+  const renderMediaPreview = (file: unknown, type: 'cover' | 'profile') => {
+    if (!file || !(file as { publicUrl?: string }).publicUrl) return null
 
-    const isVideo = file.mimeType?.startsWith('video/')
+    const fileObj = file as { publicUrl: string; fileName: string; mimeType?: string }
+    const isVideo = fileObj.mimeType?.startsWith('video/')
     return (
       <div className="space-y-2">
         <h4 className="text-sm font-medium capitalize">{type} Media</h4>
         <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
           {isVideo ? (
             <video
-              src={file.publicUrl}
+              src={fileObj.publicUrl}
               className="w-full h-full object-cover"
               controls
             />
           ) : (
-            <img
-              src={file.publicUrl}
-              alt={file.fileName}
+            <Image
+              src={fileObj.publicUrl}
+              alt={fileObj.fileName}
+              width={200}
+              height={200}
               className="w-full h-full object-cover"
             />
           )}
         </div>
-        <p className="text-xs text-muted-foreground truncate">{file.fileName}</p>
+        <p className="text-xs text-muted-foreground truncate">{fileObj.fileName}</p>
       </div>
     )
   }

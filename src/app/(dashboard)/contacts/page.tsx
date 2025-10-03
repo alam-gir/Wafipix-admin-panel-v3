@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { toast } from 'sonner'
-import { Mail, Users, MessageSquare } from 'lucide-react'
-import { ContactResponse, ContactReplyRequest, Page } from '@/types/api'
+import { MessageSquare } from 'lucide-react'
+import { ContactResponse, ContactReplyRequest } from '@/types/api'
 import { contactsApi } from '@/lib/api/contacts'
 import { ContactList } from '@/components/contacts/contact-list'
 import { MessageThread } from '@/components/contacts/message-thread'
@@ -15,7 +15,6 @@ export default function ContactsPage() {
   const [loading, setLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
-  const [unreadCount, setUnreadCount] = useState(0)
   const [pagination, setPagination] = useState({
     page: 0,
     size: 10,
@@ -60,21 +59,10 @@ export default function ContactsPage() {
     }
   }, [pagination.size])
 
-  const loadUnreadCount = useCallback(async () => {
-    try {
-      const response = await contactsApi.getUnreadCount()
-      if (response.success && response.data !== undefined) {
-        setUnreadCount(response.data)
-      }
-    } catch (error) {
-      console.error('Failed to load unread count:', error)
-    }
-  }, [])
 
   useEffect(() => {
     loadContacts()
-    loadUnreadCount()
-  }, [loadContacts, loadUnreadCount])
+  }, [loadContacts])
 
   const handleSelectContact = async (contact: ContactResponse) => {
     try {
@@ -84,7 +72,6 @@ export default function ContactsPage() {
         setSelectedContact(response.data)
         // Refresh the list to update status
         loadContacts(pagination.page)
-        loadUnreadCount()
       }
     } catch (error) {
       console.error('Failed to load contact details:', error)
@@ -142,7 +129,7 @@ export default function ContactsPage() {
         )
         
         toast.success('Reply sent successfully')
-        loadUnreadCount()
+        
       }
     } catch (error) {
       console.error('Failed to send reply:', error)
@@ -181,7 +168,7 @@ export default function ContactsPage() {
       
       // Remove from contacts list immediately
       setContacts(prevContacts => prevContacts.filter(contact => contact.id !== id))
-      loadUnreadCount()
+      
     } catch (error) {
       console.error('Failed to delete contact:', error)
       toast.error('Failed to delete contact')

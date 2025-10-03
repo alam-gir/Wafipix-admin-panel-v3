@@ -2,7 +2,7 @@
 export interface FieldError {
   field: string;
   message: string;
-  rejectedValue?: any;
+  rejectedValue?: unknown;
 }
 
 export interface PaginationInfo {
@@ -14,7 +14,7 @@ export interface PaginationInfo {
   hasPrevious: boolean;
 }
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   message?: string;
   data?: T;
@@ -80,8 +80,8 @@ export interface UpdateCategoryRequest {
   subtitle: string;
 }
 
-export interface CategoryResponse extends ApiResponse<Category> {}
-export interface CategoriesResponse extends ApiResponse<Category[]> {}
+export type CategoryResponse = ApiResponse<Category>
+export type CategoriesResponse = ApiResponse<Category[]>
 
 // Service Types
 export interface Service {
@@ -127,8 +127,8 @@ export interface ServiceSearchRequest {
   sortDirection?: string;
 }
 
-export interface ServiceResponse extends ApiResponse<Service> {}
-export interface ServicesResponse extends ApiResponse<Service[]> {}
+export type ServiceResponse = ApiResponse<Service>
+export type ServicesResponse = ApiResponse<Service[]>
 
 // Service Feature Types
 export interface ServiceFeature {
@@ -148,7 +148,7 @@ export interface UpdateServiceFeaturesRequest {
   features: ServiceFeatureRequest[];
 }
 
-export interface ServiceFeaturesResponse extends ApiResponse<ServiceFeature[]> {}
+export type ServiceFeaturesResponse = ApiResponse<ServiceFeature[]>
 
 // Service FAQ Types
 export interface ServiceFAQ {
@@ -168,7 +168,7 @@ export interface UpdateServiceFAQsRequest {
   faqs: ServiceFAQRequest[];
 }
 
-export interface ServiceFAQsResponse extends ApiResponse<ServiceFAQ[]> {}
+export type ServiceFAQsResponse = ApiResponse<ServiceFAQ[]>
 
 // Service Package Types
 export interface Package {
@@ -225,8 +225,8 @@ export interface UpdatePackageRequest {
   popular?: boolean;
 }
 
-export interface PackageResponse extends ApiResponse<Package> {}
-export interface PackagesResponse extends ApiResponse<Package[]> {}
+export type PackageResponse = ApiResponse<Package>
+export type PackagesResponse = ApiResponse<Package[]>
 
 // Client Types
 export interface Client {
@@ -256,8 +256,8 @@ export interface UpdateClientRequest {
   logo?: File;
 }
 
-export interface ClientResponse extends ApiResponse<Client> {}
-export interface ClientsResponse extends ApiResponse<Client[]> {}
+export type ClientResponse = ApiResponse<Client>
+export type ClientsResponse = ApiResponse<Client[]>
 
 // Advertisement Video Types
 export interface AdvertisementVideo {
@@ -273,7 +273,7 @@ export interface CreateAdvertisementVideoRequest {
   videoFile: File;
 }
 
-export interface AdvertisementVideoResponse extends ApiResponse<AdvertisementVideo> {}
+export type AdvertisementVideoResponse = ApiResponse<AdvertisementVideo>
 
 // Social Media Types
 export interface SocialMedia {
@@ -296,8 +296,8 @@ export interface UpdateSocialMediaRequest {
   url: string;
 }
 
-export interface SocialMediaResponse extends ApiResponse<SocialMedia> {}
-export interface SocialMediasResponse extends ApiResponse<SocialMedia[]> {}
+export type SocialMediaResponse = ApiResponse<SocialMedia>
+export type SocialMediasResponse = ApiResponse<SocialMedia[]>
 
 // Review Types
 export interface Review {
@@ -330,9 +330,9 @@ export interface UpdateReviewRequest {
   reviewImage?: File;
 }
 
-export interface ReviewResponse extends ApiResponse<Review> {}
-export interface ReviewsResponse extends ApiResponse<Review[]> {}
-export interface ReviewPlatformsResponse extends ApiResponse<string[]> {}
+export type ReviewResponse = ApiResponse<Review>
+export type ReviewsResponse = ApiResponse<Review[]>
+export type ReviewPlatformsResponse = ApiResponse<string[]>
 
 // Contact Types
 export interface ContactReplyResponse {
@@ -364,10 +364,10 @@ export interface ContactReplyRequest {
 }
 
 // Contact API Response Types
-export interface ContactsResponse extends ApiResponse<Page<ContactResponse>> {}
-export interface ContactDetailResponse extends ApiResponse<ContactResponse> {}
-export interface ContactReplyApiResponse extends ApiResponse<ContactResponse> {}
-export interface UnreadCountResponse extends ApiResponse<number> {}
+export type ContactsResponse = ApiResponse<Page<ContactResponse>>
+export type ContactDetailResponse = ApiResponse<ContactResponse>
+export type ContactReplyApiResponse = ApiResponse<ContactResponse>
+export type UnreadCountResponse = ApiResponse<number>
 
 // Portfolio Types
 export interface FileResponse {
@@ -492,7 +492,7 @@ export interface Page<T> {
 }
 
 // API Response Types
-export interface WorksResponse extends ApiResponse<Page<WorkListResponse>> {}
-export interface WorkDetailResponse extends ApiResponse<WorkResponse> {}
-export interface GalleriesResponse extends ApiResponse<GalleryResponse[]> {}
-export interface GalleryDetailResponse extends ApiResponse<GalleryResponse> {}
+export type WorksResponse = ApiResponse<Page<WorkListResponse>>
+export type WorkDetailResponse = ApiResponse<WorkResponse>
+export type GalleriesResponse = ApiResponse<GalleryResponse[]>
+export type GalleryDetailResponse = ApiResponse<GalleryResponse>

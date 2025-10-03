@@ -1,4 +1,5 @@
 import { apiService } from './index'
+import { ApiResponse } from '@/types/api'
 
 export interface DateRange {
   start: string
@@ -45,19 +46,19 @@ export interface TodayReport {
 }
 
 export const dashboardApi = {
-  getMetrics: async (): Promise<DashboardMetrics> => {
+  getMetrics: async (): Promise<ApiResponse<DashboardMetrics>> => {
     return apiService.get<DashboardMetrics>('/dashboard/metrics')
   },
 
-  getCharts: async (dateRange: DateRange): Promise<ChartData[]> => {
+  getCharts: async (dateRange: DateRange): Promise<ApiResponse<ChartData[]>> => {
     return apiService.get<ChartData[]>(`/dashboard/charts?start=${dateRange.start}&end=${dateRange.end}`)
   },
 
-  getTodayReport: async (): Promise<TodayReport> => {
+  getTodayReport: async (): Promise<ApiResponse<TodayReport>> => {
     return apiService.get<TodayReport>('/dashboard/today')
   },
 
-  getQuickStats: async (): Promise<MetricCard[]> => {
+  getQuickStats: async (): Promise<ApiResponse<MetricCard[]>> => {
     return apiService.get<MetricCard[]>('/dashboard/quick-stats')
   }
 }

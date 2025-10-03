@@ -7,6 +7,7 @@ import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import Image from 'next/image'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -131,16 +132,6 @@ export function ReviewFormModal({
     onCancel()
   }
 
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <Star
-        key={i}
-        className={`h-5 w-5 ${
-          i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
-        }`}
-      />
-    ))
-  }
 
   return (
     <Dialog open={isOpen} onOpenChange={handleCancel}>
@@ -302,9 +293,11 @@ export function ReviewFormModal({
                 <div className="space-y-2">
                   <Label>Image Preview</Label>
                   <div className="relative w-32 h-32 border rounded-lg overflow-hidden">
-                    <img
-                      src={previewUrl || review?.reviewImage}
+                    <Image
+                      src={previewUrl || review?.reviewImage || ''}
                       alt="Review preview"
+                      width={128}
+                      height={128}
                       className="w-full h-full object-cover"
                     />
                   </div>

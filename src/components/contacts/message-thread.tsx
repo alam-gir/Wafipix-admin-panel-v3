@@ -1,10 +1,8 @@
 'use client'
 
-import { Mail, Phone, Calendar, User, MessageSquare, Trash2 } from 'lucide-react'
+import { Mail, Phone, User, MessageSquare, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
 import { ContactResponse } from '@/types/api'
 
 interface MessageThreadProps {
@@ -119,7 +117,7 @@ export function MessageThread({ contact, onDelete, isSubmitting = false }: Messa
         </div>
 
         {/* Replies */}
-        {(contact.replies || []).map((reply, index) => (
+        {(contact.replies || []).map((reply) => (
           <div key={reply.id} className="flex justify-end">
             <div className="max-w-[80%]">
               <div className="bg-primary text-primary-foreground rounded-lg p-4">

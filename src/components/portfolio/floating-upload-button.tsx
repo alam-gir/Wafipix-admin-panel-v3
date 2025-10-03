@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Plus, Upload } from 'lucide-react'
+import { Upload } from 'lucide-react'
 
 interface FloatingUploadButtonProps {
   fileCount: number

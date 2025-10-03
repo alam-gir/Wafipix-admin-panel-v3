@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { ServiceList } from '@/components/services/service-list'
 import { ServiceForm } from '@/components/services/service-form'
 import { ServiceFeatures } from '@/components/services/service-features'
@@ -12,10 +12,7 @@ import {
   ArrowLeft, 
   AlertTriangle, 
   CheckCircle, 
-  Loader2,
-  Briefcase,
-  Star,
-  HelpCircle
+  Briefcase
 } from 'lucide-react'
 import { Service, CreateServiceRequest, UpdateServiceRequest, ServiceSearchRequest, Category } from '@/types/api'
 import { servicesApi } from '@/lib/api/services'
@@ -40,12 +37,35 @@ export default function ServicesPage() {
   const [faqsDialogOpen, setFaqsDialogOpen] = useState(false)
   const [packagesDialogOpen, setPackagesDialogOpen] = useState(false)
 
-  // Load data on component mount
-  useEffect(() => {
-    loadData()
+  const loadServices = useCallback(async () => {
+    try {
+      const response = await servicesApi.getAll()
+      if (response.success && response.data) {
+        setServices(response.data)
+      } else {
+        showAlert('error', response.message || 'Failed to load services')
+      }
+    } catch (error) {
+      console.error('Error loading services:', error)
+      showAlert('error', 'Failed to load services')
+    }
   }, [])
 
-  const loadData = async () => {
+  const loadCategories = useCallback(async () => {
+    try {
+      const response = await categoriesApi.getAll()
+      if (response.success && response.data) {
+        setCategories(response.data)
+      } else {
+        showAlert('error', response.message || 'Failed to load categories')
+      }
+    } catch (error) {
+      console.error('Error loading categories:', error)
+      showAlert('error', 'Failed to load categories')
+    }
+  }, [])
+
+  const loadData = useCallback(async () => {
     try {
       setIsLoading(true)
       await Promise.all([
@@ -58,35 +78,12 @@ export default function ServicesPage() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [loadServices, loadCategories])
 
-  const loadServices = async () => {
-    try {
-      const response = await servicesApi.getAll()
-      if (response.success && response.data) {
-        setServices(response.data)
-      } else {
-        showAlert('error', response.message || 'Failed to load services')
-      }
-    } catch (error) {
-      console.error('Error loading services:', error)
-      showAlert('error', 'Failed to load services')
-    }
-  }
-
-  const loadCategories = async () => {
-    try {
-      const response = await categoriesApi.getAll()
-      if (response.success && response.data) {
-        setCategories(response.data)
-      } else {
-        showAlert('error', response.message || 'Failed to load categories')
-      }
-    } catch (error) {
-      console.error('Error loading categories:', error)
-      showAlert('error', 'Failed to load categories')
-    }
-  }
+  // Load data on component mount
+  useEffect(() => {
+    loadData()
+  }, [loadData])
 
   const showAlert = (type: 'success' | 'error', message: string) => {
     setAlert({ type, message })

@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Search, Edit, Trash2, Star, Eye, EyeOff, Image } from 'lucide-react'
+import { Plus, Search, Star, Eye } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Switch } from '@/components/ui/switch'
+import Image from 'next/image'
 import { toast } from 'sonner'
 import { reviewsApi } from '@/lib/api/reviews'
 import { Review, CreateReviewRequest, UpdateReviewRequest } from '@/types/api'
@@ -17,7 +17,6 @@ export default function ReviewsPage() {
   const [reviews, setReviews] = useState<Review[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-  const [showForm, setShowForm] = useState(false)
   const [editingReview, setEditingReview] = useState<Review | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isUnifiedModalOpen, setIsUnifiedModalOpen] = useState(false)
@@ -58,14 +57,13 @@ export default function ReviewsPage() {
     }
   }
 
-  const handleCreate = async (data: CreateReviewRequest) => {
+  const handleCreate = async (data: CreateReviewRequest | UpdateReviewRequest) => {
     try {
       setIsSubmitting(true)
-      const response = await reviewsApi.create(data)
+      const response = await reviewsApi.create(data as CreateReviewRequest)
       if (response.success && response.data) {
         setReviews(prev => [response.data!, ...prev])
         setIsModalOpen(false)
-        setShowForm(false)
         toast.success('Review created successfully')
       }
     } catch (error) {
@@ -151,14 +149,8 @@ export default function ReviewsPage() {
     }
   }
 
-  const handleEdit = (review: Review) => {
-    setEditingReview(review)
-    setIsModalOpen(true)
-    setShowForm(false)
-  }
 
   const handleCancelForm = () => {
-    setShowForm(false)
     setEditingReview(null)
     setIsModalOpen(false)
   }
@@ -187,7 +179,6 @@ export default function ReviewsPage() {
   }
 
   const handleAddNew = () => {
-    setShowForm(true)
     setEditingReview(null)
     setIsModalOpen(true)
   }
@@ -314,9 +305,11 @@ export default function ReviewsPage() {
                     {/* Review Image */}
                     {review.reviewImage && (
                       <div className="w-32 h-32 flex-shrink-0 border-r border-gray-200 bg-gray-50 mr-4">
-                        <img
+                        <Image
                           src={review.reviewImage}
                           alt="Review"
+                          width={128}
+                          height={128}
                           className="w-full h-full object-cover"
                         />
                       </div>
@@ -365,7 +358,7 @@ export default function ReviewsPage() {
                       {review.reviewText && (
                         <div className="mb-4">
                           <p className="text-sm text-gray-700 leading-relaxed">
-                            "{review.reviewText}"
+                            &ldquo;{review.reviewText}&rdquo;
                           </p>
                         </div>
                       )}

@@ -65,7 +65,7 @@ export default function ProfilePage() {
       
       // Refresh user data
       await refreshUser()
-    } catch (error) {
+    } catch {
       toast.error('Failed to update profile')
     } finally {
       setIsSaving(false)

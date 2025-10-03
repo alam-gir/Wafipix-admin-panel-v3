@@ -9,9 +9,7 @@ import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { Separator } from '@/components/ui/separator'
-import { Badge } from '@/components/ui/badge'
 import { 
-  Settings, 
   Save, 
   Globe, 
   Bell, 
@@ -19,8 +17,6 @@ import {
   Palette, 
   Database, 
   Mail,
-  Smartphone,
-  Monitor,
   Moon,
   Sun,
   RefreshCw
@@ -80,7 +76,7 @@ export default function SettingsPage() {
       await new Promise(resolve => setTimeout(resolve, 1000))
       
       toast.success('Settings saved successfully!')
-    } catch (error) {
+    } catch {
       toast.error('Failed to save settings')
     } finally {
       setIsLoading(false)
@@ -91,7 +87,7 @@ export default function SettingsPage() {
     toast.info('Settings reset to defaults')
   }
 
-  const updateSetting = (key: string, value: any) => {
+  const updateSetting = (key: string, value: unknown) => {
     setSettings(prev => ({
       ...prev,
       [key]: value

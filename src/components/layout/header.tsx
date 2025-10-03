@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowLeft, User, Settings, LogOut, Menu } from 'lucide-react'
+import { ArrowLeft, User, Settings, LogOut } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'

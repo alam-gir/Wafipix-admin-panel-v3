@@ -1,23 +1,14 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { CategoryList } from '@/components/categories/category-list'
 import { CategoryForm } from '@/components/categories/category-form'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { 
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
 import { 
   ArrowLeft, 
   AlertTriangle, 
   CheckCircle, 
-  Loader2,
   FolderOpen
 } from 'lucide-react'
 import { Category, CreateCategoryRequest, UpdateCategoryRequest } from '@/types/api'
@@ -36,12 +27,7 @@ export default function CategoriesPage() {
     message: string
   } | null>(null)
 
-  // Load categories on component mount
-  useEffect(() => {
-    loadCategories()
-  }, [])
-
-  const loadCategories = async () => {
+  const loadCategories = useCallback(async () => {
     try {
       setIsLoading(true)
       const response = await categoriesApi.getAll()
@@ -56,7 +42,12 @@ export default function CategoriesPage() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [])
+
+  // Load categories on component mount
+  useEffect(() => {
+    loadCategories()
+  }, [loadCategories])
 
   const showAlert = (type: 'success' | 'error', message: string) => {
     setAlert({ type, message })

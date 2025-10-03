@@ -9,6 +9,7 @@ import { servicesApi } from '@/lib/api/services'
 import { WorkListResponse, WorkResponse, CreateWorkRequest, UpdateWorkRequest, Service } from '@/types/api'
 import { WorkForm } from '@/components/portfolio/work-form'
 import { WorkList } from '@/components/portfolio/work-list'
+import { AxiosProgressEvent } from 'axios'
 
 export default function PortfolioPage() {
   const [works, setWorks] = useState<WorkListResponse[]>([])
@@ -64,7 +65,7 @@ export default function PortfolioPage() {
     loadServices()
   }, [loadWorks, loadServices])
 
-  const handleCreate = async (data: CreateWorkRequest, config?: any) => {
+  const handleCreate = async (data: CreateWorkRequest, config?: { onUploadProgress?: (progressEvent: AxiosProgressEvent) => void }) => {
     try {
       setIsSubmitting(true)
       const response = await portfolioApi.create(data, config)
@@ -81,7 +82,7 @@ export default function PortfolioPage() {
     }
   }
 
-  const handleUpdate = async (data: UpdateWorkRequest, config?: any) => {
+  const handleUpdate = async (data: UpdateWorkRequest, config?: { onUploadProgress?: (progressEvent: AxiosProgressEvent) => void }) => {
     if (!editingWork) return
 
     try {

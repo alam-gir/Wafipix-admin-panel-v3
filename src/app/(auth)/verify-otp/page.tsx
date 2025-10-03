@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ArrowLeft, RefreshCw, Shield, Clock } from 'lucide-react'
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp'
@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useAuth } from '@/lib/auth/context'
 import { AuthWrapper } from '@/components/auth/auth-wrapper'
 
-export default function VerifyOtpPage() {
+function VerifyOtpContent() {
   const [otp, setOtp] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isResending, setIsResending] = useState(false)
@@ -33,14 +33,7 @@ export default function VerifyOtpPage() {
     }
   }, [resendTimer])
 
-  // Auto-submit when OTP is complete
-  useEffect(() => {
-    if (otp.length === 6) {
-      handleVerifyOtp()
-    }
-  }, [otp])
-
-  const handleVerifyOtp = async () => {
+  const handleVerifyOtp = useCallback(async () => {
     if (!email || otp.length !== 6) return
 
     try {
@@ -51,13 +44,20 @@ export default function VerifyOtpPage() {
       
       // Redirect to dashboard
       router.push('/dashboard')
-    } catch (error: any) {
-      setError(error.message || 'Invalid OTP. Please try again.')
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : 'Invalid OTP. Please try again.')
       setOtp('') // Clear OTP on error
     } finally {
       setIsSubmitting(false)
     }
-  }
+  }, [email, otp, verifyOtp, router])
+
+  // Auto-submit when OTP is complete
+  useEffect(() => {
+    if (otp.length === 6) {
+      handleVerifyOtp()
+    }
+  }, [otp, handleVerifyOtp])
 
   const handleResendOtp = async () => {
     if (!email || resendTimer > 0 || resendAttempts >= maxResendAttempts) return
@@ -73,8 +73,8 @@ export default function VerifyOtpPage() {
       setResendAttempts(prev => prev + 1)
       setOtp('') // Clear current OTP
       
-    } catch (error: any) {
-      setError(error.message || 'Failed to resend OTP. Please try again.')
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : 'Failed to resend OTP. Please try again.')
     } finally {
       setIsResending(false)
     }
@@ -179,7 +179,7 @@ export default function VerifyOtpPage() {
               {resendTimer === 0 && resendAttempts < maxResendAttempts && (
                 <>
                   <div className="text-sm text-slate-600 mb-2">
-                    Didn't receive the code?
+                    Didn&apos;t receive the code?
                   </div>
                   <Button
                     variant="outline"
@@ -235,6 +235,25 @@ export default function VerifyOtpPage() {
       </div>
     </div>
     </AuthWrapper>
+  )
+}
+
+export default function VerifyOtpPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-4">
+        <Card className="w-full max-w-sm">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent mx-auto mb-4"></div>
+              <p className="text-sm text-slate-600">Loading...</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    }>
+      <VerifyOtpContent />
+    </Suspense>
   )
 }
 
