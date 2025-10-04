@@ -18,10 +18,25 @@ import { WorkResponse, CreateWorkRequest, UpdateWorkRequest, Service, FileRespon
 import { AxiosProgressEvent } from 'axios'
 import RichTextEditor from '../ui/rich-text-editor'
 
+// Helper function to count text content without HTML tags
+const getTextContentLength = (htmlString: string): number => {
+  if (!htmlString) return 0
+  // Create a temporary div to parse HTML and extract text content
+  const tempDiv = document.createElement('div')
+  tempDiv.innerHTML = htmlString
+  return tempDiv.textContent?.length || 0
+}
+
 const workFormSchema = z.object({
   title: z.string().min(1, 'Title is required').max(100, 'Title must not exceed 100 characters'),
   serviceId: z.string().min(1, 'Service is required'),
-  description: z.string().max(1000, 'Description must not exceed 1000 characters').optional(),
+  description: z.string()
+    .refine((val) => {
+      if (!val) return true // Optional field
+      const textLength = getTextContentLength(val)
+      return textLength <= 1000
+    }, 'Description must not exceed 1000 characters.')
+    .optional(),
 }).refine(() => {
   // This will be validated in the component with access to file states
   return true
@@ -162,12 +177,7 @@ export function WorkForm({ work, services, isOpen, onClose, onSubmit, isLoading 
         return
       }
 
-      // Validate profile media (at least one required)
-      const hasProfileMedia = profileVideo || profileImage || (work && (work.profileVideo || work.profileImage))
-      if (!hasProfileMedia) {
-        toast.error('Profile media is required. Please upload at least one profile image or video.')
-        return
-      }
+      // Profile media is now optional - no validation needed
 
       setIsUploading(true)
       setUploadProgress(0)
@@ -256,11 +266,12 @@ export function WorkForm({ work, services, isOpen, onClose, onSubmit, isLoading 
   ) => {
     const isVideo = type.includes('Video')
     const Icon = isVideo ? Video : ImageIcon
+    const isRequired = type.includes('cover') // Only cover fields are required
 
     return (
       <div className="space-y-2">
         <Label htmlFor={type}>
-          {label} <span className="text-red-500">*</span>
+          {label} {isRequired && <span className="text-red-500">*</span>}
         </Label>
         
         {/* Show existing file if available */}
@@ -407,6 +418,12 @@ export function WorkForm({ work, services, isOpen, onClose, onSubmit, isLoading 
                 placeholder="Enter work description with rich formatting..."
                 className={errors.description ? 'border-red-500' : ''}
               />
+              <div className="flex justify-between items-center text-xs text-muted-foreground">
+                <span>Rich text formatting is supported</span>
+                <span className={getTextContentLength(watch('description') || '') > 1000 ? 'text-red-500' : ''}>
+                  {getTextContentLength(watch('description') || '')}/1000 characters
+                </span>
+              </div>
               {errors.description && (
                 <p className="text-sm text-red-500">{errors.description.message}</p>
               )}
@@ -419,11 +436,11 @@ export function WorkForm({ work, services, isOpen, onClose, onSubmit, isLoading 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {renderFileInput('coverVideo', 'Cover Video', coverVideo, work?.coverVideo)}
               {renderFileInput('coverImage', 'Cover Image', coverImage, work?.coverImage)}
-              {renderFileInput('profileVideo', 'Profile Video', profileVideo, work?.profileVideo)}
-              {renderFileInput('profileImage', 'Profile Image', profileImage, work?.profileImage)}
+              {renderFileInput('profileVideo', 'Profile Video (Optional)', profileVideo, work?.profileVideo)}
+              {renderFileInput('profileImage', 'Profile Image (Optional)', profileImage, work?.profileImage)}
             </div>
             <p className="text-sm text-muted-foreground">
-              Note: Cover media (image or video) and Profile media (image or video) are required. Maximum file size: 100MB.
+              Note: Cover media (image or video) is required. Profile media is optional. Maximum file size: 100MB.
             </p>
           </div>
 
