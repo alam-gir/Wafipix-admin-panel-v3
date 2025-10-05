@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { 
   LayoutDashboard, 
@@ -83,7 +84,10 @@ interface SidebarProps {
 export function Sidebar({ className, isMobile = false, onClose }: SidebarProps) {
   const pathname = usePathname()
   const [expandedSections, setExpandedSections] = useState<string[]>(['main', 'management', 'orders', 'employees', 'payments', 'contacts', 'marketing'])
-  const { logout, user } = useAuth()
+  const { logout, user, isLoading } = useAuth()
+
+  // Debug: Log user data
+  console.log('Sidebar - User data:', user)
 
   const toggleSection = (section: string) => {
     setExpandedSections(prev => 
@@ -188,25 +192,38 @@ export function Sidebar({ className, isMobile = false, onClose }: SidebarProps) 
       {/* Profile Section - Fixed at bottom */}
       <div className="border-t p-4 flex-shrink-0">
         <div className="flex items-center space-x-3">
-          <Avatar className="h-8 w-8 transition-all duration-200 hover:ring-2 hover:ring-primary/20">
-            <AvatarImage src="/avatars/admin.jpg" />
-            <AvatarFallback className="bg-primary text-primary-foreground">
-              {user ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}` : 'JD'}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">{user ? `${user.firstName} ${user.lastName}` : 'John Doe'}</p>
-            <p className="text-xs text-muted-foreground truncate">{user?.email || 'admin@example.com'}</p>
-          </div>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="h-8 w-8 p-0 transition-all duration-200 hover:bg-accent"
-            onClick={logout}
-            title="Logout"
-          >
-            <LogOut className="h-4 w-4" />
-          </Button>
+          {isLoading ? (
+            <>
+              <Skeleton className="h-8 w-8 rounded-full" />
+              <div className="flex-1 min-w-0 space-y-1">
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-3 w-28" />
+              </div>
+              <Skeleton className="h-8 w-8 rounded" />
+            </>
+          ) : (
+            <>
+              <Avatar className="h-8 w-8 transition-all duration-200 hover:ring-2 hover:ring-primary/20">
+                <AvatarImage src={undefined} alt={user ? `${user.firstName} ${user.lastName}` : 'User'} />
+                <AvatarFallback className="bg-primary text-primary-foreground">
+                  {user ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}` : '...'}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{user ? `${user.firstName} ${user.lastName}` : 'Loading...'}</p>
+                <p className="text-xs text-muted-foreground truncate">{user?.email || 'Loading...'}</p>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-8 w-8 p-0 transition-all duration-200 hover:bg-accent"
+                onClick={logout}
+                title="Logout"
+              >
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </div>

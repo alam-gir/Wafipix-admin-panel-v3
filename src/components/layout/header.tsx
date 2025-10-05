@@ -4,6 +4,7 @@ import { ArrowLeft, User, Settings, LogOut } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,8 +24,11 @@ interface HeaderProps {
 }
 
 export function Header({ title, showBackButton = false, onBackClick }: HeaderProps) {
-  const { logout, user } = useAuth()
+  const { logout, user, isLoading } = useAuth()
   const router = useRouter()
+
+  // Debug: Log user data
+  console.log('Header - User data:', user)
 
   const handleLogout = () => {
     logout()
@@ -67,21 +71,34 @@ export function Header({ title, showBackButton = false, onBackClick }: HeaderPro
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-8 w-8 rounded-full transition-all duration-200 hover:bg-accent">
-              <Avatar className="h-8 w-8 transition-all duration-200 hover:ring-2 hover:ring-primary/20">
-                <AvatarImage src="/avatars/admin.jpg" alt="User" />
-                <AvatarFallback className="bg-primary text-primary-foreground">
-                  {user ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}` : 'JD'}
-                </AvatarFallback>
-              </Avatar>
+              {isLoading ? (
+                <Skeleton className="h-8 w-8 rounded-full" />
+              ) : (
+                <Avatar className="h-8 w-8 transition-all duration-200 hover:ring-2 hover:ring-primary/20">
+                  <AvatarImage src={undefined} alt={user ? `${user.firstName} ${user.lastName}` : 'User'} />
+                  <AvatarFallback className="bg-primary text-primary-foreground">
+                    {user ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}` : '...'}
+                  </AvatarFallback>
+                </Avatar>
+              )}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56" align="end" forceMount>
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">{user ? `${user.firstName} ${user.lastName}` : 'John Doe'}</p>
-                <p className="text-xs leading-none text-muted-foreground">
-                  {user?.email || 'admin@example.com'}
-                </p>
+                {isLoading ? (
+                  <>
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-3 w-32" />
+                  </>
+                ) : (
+                  <>
+                    <p className="text-sm font-medium leading-none">{user ? `${user.firstName} ${user.lastName}` : 'Loading...'}</p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {user?.email || 'Loading...'}
+                    </p>
+                  </>
+                )}
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />

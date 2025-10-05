@@ -22,8 +22,9 @@ type LoginFormData = z.infer<typeof loginSchema>
 
 export default function LoginForm() {
   const [error, setError] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
-  const { login, isLoading } = useAuth()
+  const { login } = useAuth()
 
   const {
     register,
@@ -36,6 +37,7 @@ export default function LoginForm() {
   const onSubmit = async (data: LoginFormData) => {
     try {
       setError(null)
+      setIsSubmitting(true)
       
       await login(data.email)
       
@@ -43,6 +45,8 @@ export default function LoginForm() {
       router.push(`/verify-otp?email=${encodeURIComponent(data.email)}`)
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : 'Failed to send OTP. Please try again.')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -102,9 +106,9 @@ export default function LoginForm() {
               <Button
                 type="submit"
                 className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-medium"
-                disabled={isLoading}
+                disabled={isSubmitting}
               >
-                {isLoading ? (
+                {isSubmitting ? (
                   <div className="flex items-center space-x-2">
                     <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
                     <span>Sending Code...</span>

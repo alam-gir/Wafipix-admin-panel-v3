@@ -23,7 +23,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   // Initial state
   user: null,
   isAuthenticated: false,
-  isLoading: false,
+  isLoading: true, // Start with loading true to show skeletons initially
 
   // Set loading state
   setLoading: (loading: boolean) => set({ isLoading: loading }),
@@ -58,6 +58,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       
       if (response.success && response.data) {
         // Backend returns user data directly - no need for separate getCurrentUser call
+        console.log('Auth Store - Setting user data:', response.data)
         set({
           user: response.data,
           isAuthenticated: true,
@@ -113,17 +114,21 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   // Check authentication status
   checkAuth: async () => {
     try {
+      console.log('Auth Store - checkAuth starting, setting isLoading: true')
       set({ isLoading: true })
       
       const response = await authApi.getCurrentUser()
       
       if (response.success && response.data) {
+        console.log('Auth Store - checkAuth user data:', response.data)
+        console.log('Auth Store - checkAuth success, setting isLoading: false')
         set({
           user: response.data,
           isAuthenticated: true,
           isLoading: false
         })
       } else {
+        console.log('Auth Store - checkAuth failed, setting isLoading: false')
         set({
           user: null,
           isAuthenticated: false,
@@ -132,6 +137,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
     } catch (error) {
       console.error('Auth check failed:', error)
+      console.log('Auth Store - checkAuth error, setting isLoading: false')
       set({
         user: null,
         isAuthenticated: false,

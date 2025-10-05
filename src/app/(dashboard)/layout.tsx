@@ -1,5 +1,6 @@
 import { Sidebar } from '@/components/layout/sidebar'
 import { Header } from '@/components/layout/header'
+import { UserDataLoader } from '@/components/auth/user-data-loader'
 import { handleServerAuthRedirect } from '@/lib/server-auth'
 
 export default async function DashboardLayout({
@@ -12,6 +13,9 @@ export default async function DashboardLayout({
 
   return (
     <div className="flex h-screen bg-background">
+      {/* Load user data on client side */}
+      <UserDataLoader />
+      
       {/* Desktop Sidebar */}
       <div className="hidden lg:block">
         <Sidebar />

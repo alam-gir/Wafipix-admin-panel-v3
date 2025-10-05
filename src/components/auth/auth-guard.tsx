@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useAuth } from '@/hooks/use-auth'
 
 interface AuthGuardProps {
@@ -13,19 +13,21 @@ interface AuthGuardProps {
  */
 export function AuthGuard({ children }: AuthGuardProps) {
   const { user, isAuthenticated, isLoading, checkAuth } = useAuth()
+  const hasCheckedAuth = useRef(false)
+  const hasRedirected = useRef(false)
+
+  console.log('AuthGuard - State:', { user, isAuthenticated, isLoading })
 
   useEffect(() => {
-    // Only check auth if we don't have a user yet
-    // If we already have a user, we're authenticated
-    if (!user && !isLoading) {
-      console.log('AuthGuard: No user found, checking auth...')
+    // Check auth once on mount
+    if (!hasCheckedAuth.current) {
+      hasCheckedAuth.current = true
+      console.log('AuthGuard: Checking auth on mount...')
       checkAuth().catch(error => {
         console.error('AuthGuard: Auth check failed:', error)
       })
-    } else if (user) {
-      console.log('AuthGuard: User already exists, skipping auth check')
     }
-  }, [user, isLoading, checkAuth])
+  }, []) // Empty dependency array - only run once on mount
 
   // Show loading while checking auth
   if (isLoading) {
@@ -40,7 +42,9 @@ export function AuthGuard({ children }: AuthGuardProps) {
   }
 
   // If not authenticated (including invalid tokens), redirect to login
-  if (!isAuthenticated) {
+  if (!isAuthenticated && !hasRedirected.current) {
+    hasRedirected.current = true
+    console.log('AuthGuard: Not authenticated, redirecting to login...')
     // Redirect to login if tokens are invalid
     if (typeof window !== 'undefined') {
       window.location.href = '/login'

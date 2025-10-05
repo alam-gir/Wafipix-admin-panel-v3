@@ -15,10 +15,11 @@ export default function OtpForm() {
   const [resendTimer, setResendTimer] = useState(60)
   const [resendAttempts, setResendAttempts] = useState(0)
   const [maxResendAttempts] = useState(4)
+  const [isVerifying, setIsVerifying] = useState(false)
   
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { verifyOtp, login, isLoading } = useAuth()
+  const { verifyOtp, login } = useAuth()
   
   const email = searchParams.get('email')
 
@@ -35,6 +36,7 @@ export default function OtpForm() {
 
     try {
       setError(null)
+      setIsVerifying(true)
       
       await verifyOtp(email, otp)
       
@@ -43,6 +45,8 @@ export default function OtpForm() {
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : 'Invalid OTP. Please try again.')
       setOtp('') // Clear OTP on error
+    } finally {
+      setIsVerifying(false)
     }
   }, [email, otp, verifyOtp, router])
 
@@ -123,7 +127,7 @@ export default function OtpForm() {
                 value={otp}
                 onChange={setOtp}
                 maxLength={6}
-                disabled={isLoading}
+                disabled={isVerifying}
               >
                 <InputOTPGroup>
                   <InputOTPSlot index={0} />
@@ -144,7 +148,7 @@ export default function OtpForm() {
             )}
 
             {/* Loading State */}
-            {isLoading && (
+            {isVerifying && (
               <div className="text-center py-2">
                 <div className="inline-flex items-center space-x-2 text-sm text-slate-600">
                   <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary border-t-transparent"></div>
@@ -175,7 +179,7 @@ export default function OtpForm() {
                     variant="outline"
                     size="sm"
                     onClick={handleResendOtp}
-                    disabled={isLoading}
+                    disabled={isVerifying}
                     className="w-full"
                   >
                     <div className="flex items-center space-x-2">
