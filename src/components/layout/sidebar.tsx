@@ -41,7 +41,7 @@ import {
   Mail
 } from 'lucide-react'
 import { NAVIGATION_CONFIG } from '@/lib/constants'
-import { useAuth } from '@/lib/auth/context'
+import { useAuth } from '@/hooks/use-auth'
 
 const iconMap = {
   LayoutDashboard,

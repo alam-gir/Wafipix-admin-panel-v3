@@ -1,4 +1,4 @@
-import { User } from '../api/auth'
+import { User } from '@/types/api'
 import { DashboardMetrics, ChartData, TodayReport } from '../api/dashboard'
 import { UsersResponse } from '../api/users'
 import { Role, Permission } from '../api/roles'

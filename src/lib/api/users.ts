@@ -1,5 +1,5 @@
 import { apiService } from './index'
-import { User } from './auth'
+import { User } from '@/types/api'
 import { ApiResponse } from '@/types/api'
 
 export interface CreateUserRequest {

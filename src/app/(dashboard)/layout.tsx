@@ -1,31 +1,32 @@
 import { Sidebar } from '@/components/layout/sidebar'
 import { Header } from '@/components/layout/header'
-import { AuthWrapper } from '@/components/auth/auth-wrapper'
+import { handleServerAuthRedirect } from '@/lib/server-auth'
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  // Server-side authentication check (currently disabled)
+  await handleServerAuthRedirect('/dashboard')
+
   return (
-    <AuthWrapper>
-      <div className="flex h-screen bg-background">
-        {/* Desktop Sidebar */}
-        <div className="hidden lg:block">
-          <Sidebar />
-        </div>
-        
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Header */}
-          <Header title="Dashboard Overview" />
-          
-          {/* Page Content */}
-          <main className="flex-1 overflow-auto p-4 lg:p-6">
-            {children}
-          </main>
-        </div>
+    <div className="flex h-screen bg-background">
+      {/* Desktop Sidebar */}
+      <div className="hidden lg:block">
+        <Sidebar />
       </div>
-    </AuthWrapper>
+      
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <Header title="Dashboard Overview" />
+        
+        {/* Page Content */}
+        <main className="flex-1 overflow-auto p-4 lg:p-6">
+          {children}
+        </main>
+      </div>
+    </div>
   )
 }

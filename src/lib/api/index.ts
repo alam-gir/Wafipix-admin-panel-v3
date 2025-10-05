@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
-import { getDeviceId } from '../auth/device-id'
-import { ApiResponse, RefreshTokenResponse, PaginationInfo } from '@/types/api'
+import { getDeviceId } from '../device-id'
+import { ApiResponse, User, PaginationInfo } from '@/types/api'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/'
 
@@ -147,17 +147,17 @@ class ApiService {
         }
       })
 
-      const response = await refreshAxios.post<ApiResponse<RefreshTokenResponse>>(
-        `/v3/auth/refresh-token/${deviceId}`,
+      const response = await refreshAxios.post<ApiResponse<User>>(
+        `/v3/admin/auth/refresh-token/${deviceId}`,
         {} // Empty body - refresh token comes from HTTP-only cookies
       )
 
       console.log('Token refresh response:', response.data)
 
       if (response.data.success && response.data.data) {
-        // Backend will set new HTTP-only cookies
+        // Backend will set new HTTP-only cookies and returns User directly
         console.log('Token refresh successful')
-        return response.data.data.accessToken
+        return 'success' // Just return success since backend handles cookies
       } else {
         throw new Error(response.data.message || 'Token refresh failed')
       }
@@ -312,7 +312,6 @@ class ApiService {
 export const apiService = new ApiService()
 
 // Export individual API modules
-export * from './auth'
 export * from './dashboard'
 export * from './users'
 export * from './roles'
@@ -321,3 +320,6 @@ export * from './advertisement-videos'
 export * from './social-media'
 export * from './reviews'
 export * from './contacts'
+export * from './categories'
+export * from './services'
+export * from './portfolio'

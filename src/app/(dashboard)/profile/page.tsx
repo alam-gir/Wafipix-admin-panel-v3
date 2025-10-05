@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useAuth } from '@/lib/auth/context'
+import { useAuth } from '@/hooks/use-auth'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -23,7 +23,7 @@ import {
 import { toast } from 'sonner'
 
 export default function ProfilePage() {
-  const { user, refreshUser } = useAuth()
+  const { user, checkAuth } = useAuth()
   const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [editedData, setEditedData] = useState({
@@ -64,7 +64,7 @@ export default function ProfilePage() {
       setIsEditing(false)
       
       // Refresh user data
-      await refreshUser()
+      await checkAuth()
     } catch {
       toast.error('Failed to update profile')
     } finally {

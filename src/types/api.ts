@@ -37,16 +37,7 @@ export interface VerifyOtpRequest {
   deviceId: string;
 }
 
-export interface VerifyOtpResponse {
-  accessToken: string;
-  refreshToken: string;
-}
-
-export interface RefreshTokenResponse {
-  accessToken: string;
-  refreshToken: string;
-}
-
+// User interface
 export interface User {
   id: string;
   email: string;
@@ -58,6 +49,12 @@ export interface User {
   createdAt: string;
   updatedAt: string;
 }
+
+// Verify OTP now returns User directly
+export type VerifyOtpResponse = User
+
+// Refresh token also returns User directly  
+export type RefreshTokenResponse = User
 
 // Category Types
 export interface Category {

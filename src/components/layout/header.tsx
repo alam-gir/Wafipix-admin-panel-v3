@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Sidebar } from './sidebar'
 import { NotificationPopup } from './notification-popup'
-import { useAuth } from '@/lib/auth/context'
+import { useAuth } from '@/hooks/use-auth'
 
 interface HeaderProps {
   title?: string
