@@ -34,10 +34,13 @@ export const advertisementVideosApi = {
     const formData = new FormData()
     formData.append('videoFile', videoFile)
 
-    const response = await apiService.post<AdvertisementVideo>('/v3/admin/advertisement-videos', formData, {
+    const response = await apiService.postWithRetry<AdvertisementVideo>('/v3/admin/advertisement-videos', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
+      isFileUpload: true,
+      maxRetries: 3,
+      retryDelay: 2000,
       onUploadProgress: options?.onUploadProgress,
     })
     

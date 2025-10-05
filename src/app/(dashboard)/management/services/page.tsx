@@ -17,6 +17,7 @@ import {
 import { Service, CreateServiceRequest, UpdateServiceRequest, ServiceSearchRequest, Category } from '@/types/api'
 import { servicesApi } from '@/lib/api/services'
 import { categoriesApi } from '@/lib/api/categories'
+import { AxiosProgressEvent } from 'axios'
 
 type ViewMode = 'list' | 'create' | 'edit'
 
@@ -139,13 +140,13 @@ export default function ServicesPage() {
     }
   }
 
-  const handleFormSubmit = async (data: CreateServiceRequest | UpdateServiceRequest) => {
+  const handleFormSubmit = async (data: CreateServiceRequest | UpdateServiceRequest, config?: { onUploadProgress?: (progressEvent: AxiosProgressEvent) => void }) => {
     try {
       setIsSubmitting(true)
       
       if (viewMode === 'create') {
         // Create new service
-        const response = await servicesApi.create(data as CreateServiceRequest)
+        const response = await servicesApi.create(data as CreateServiceRequest, config)
         if (response.success && response.data) {
           setServices([response.data, ...services])
           showAlert('success', 'Service created successfully')
@@ -155,7 +156,7 @@ export default function ServicesPage() {
         }
       } else if (viewMode === 'edit' && selectedService) {
         // Update existing service
-        const response = await servicesApi.update(selectedService.id, data as UpdateServiceRequest)
+        const response = await servicesApi.update(selectedService.id, data as UpdateServiceRequest, config)
         if (response.success && response.data) {
           setServices(services.map(s => 
             s.id === selectedService.id ? response.data! : s

@@ -13,11 +13,14 @@ class ApiService {
   constructor(baseURL: string = API_BASE_URL) {
     this.axiosInstance = axios.create({
       baseURL,
-      timeout: 10000,
+      timeout: 300000, // 5 minutes default timeout
       headers: {
         'Content-Type': 'application/json',
       },
       withCredentials: true, // Important for cookies
+      // Enhanced configuration for file uploads
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity,
     })
 
     this.setupInterceptors()
@@ -184,6 +187,43 @@ class ApiService {
     }
   }
 
+  // Helper method to determine if we should retry a request
+  private shouldRetry(error: unknown, attempt: number, maxRetries: number): boolean {
+    // Don't retry if we've exceeded max attempts
+    if (attempt >= maxRetries) return false
+    
+    // Type guard to check if error has response property
+    const isAxiosError = (err: unknown): err is { response?: { status: number }; code?: string } => {
+      return typeof err === 'object' && err !== null && 'response' in err
+    }
+    
+    if (!isAxiosError(error)) return false
+    
+    // Don't retry authentication errors
+    if (error.response?.status === 401 || error.response?.status === 403) return false
+    
+    // Don't retry client errors (4xx) except timeout and network issues
+    if (error.response && error.response.status >= 400 && error.response.status < 500) {
+      // Retry only for specific client errors
+      const retryableStatuses = [408, 429] // Request Timeout, Too Many Requests
+      return retryableStatuses.includes(error.response.status)
+    }
+    
+    // Retry for network errors, timeouts, and server errors
+    return (
+      !error.response || // Network error
+      error.code === 'ECONNABORTED' || // Timeout
+      error.code === 'ENOTFOUND' || // DNS error
+      error.code === 'ECONNRESET' || // Connection reset
+      (error.response.status >= 500) // Server errors
+    )
+  }
+
+  // Helper method for delays
+  private sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms))
+  }
+
   // Enhanced methods that properly handle Spring Boot ResponseUtil responses
   async get<T>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     try {
@@ -192,6 +232,128 @@ class ApiService {
     } catch (error) {
       return this.handleError<T>(error)
     }
+  }
+
+  // Enhanced POST method with intelligent timeout for file uploads
+  async postWithRetry<T>(
+    url: string, 
+    data?: unknown, 
+    config?: AxiosRequestConfig & { 
+      isFileUpload?: boolean
+      maxRetries?: number
+      retryDelay?: number
+    }
+  ): Promise<ApiResponse<T>> {
+    const maxRetries = config?.maxRetries || 3
+    const retryDelay = config?.retryDelay || 1000
+    const isFileUpload = config?.isFileUpload || false
+    
+    // Calculate intelligent timeout based on data size
+    let timeout = 300000 // 5 minutes default
+    
+    if (isFileUpload && data instanceof FormData) {
+      // Estimate file size from FormData
+      let totalSize = 0
+      for (const [key, value] of data.entries()) {
+        if (value instanceof File) {
+          totalSize += value.size
+        }
+      }
+      
+      // Calculate timeout: 1 minute per 10MB + 2 minutes base
+      timeout = Math.max(120000, Math.min(1800000, (totalSize / (10 * 1024 * 1024)) * 60000 + 120000))
+    }
+
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const requestConfig = {
+          ...config,
+          timeout,
+          // Remove our custom properties
+          isFileUpload: undefined,
+          maxRetries: undefined,
+          retryDelay: undefined,
+        }
+
+        const response = await this.axiosInstance.post<ApiResponse<T>>(url, data, requestConfig)
+        return this.processResponse(response)
+      } catch (error) {
+        const isLastAttempt = attempt === maxRetries
+        const shouldRetry = this.shouldRetry(error, attempt, maxRetries)
+        
+        if (isLastAttempt || !shouldRetry) {
+          return this.handleError<T>(error)
+        }
+        
+        // Wait before retry with exponential backoff
+        const delay = retryDelay * Math.pow(2, attempt)
+        console.log(`Upload attempt ${attempt + 1} failed, retrying in ${delay}ms...`)
+        await this.sleep(delay)
+      }
+    }
+    
+    return this.handleError<T>(new Error('Max retries exceeded'))
+  }
+
+  // Enhanced PUT method with intelligent timeout for file uploads
+  async putWithRetry<T>(
+    url: string, 
+    data?: unknown, 
+    config?: AxiosRequestConfig & { 
+      isFileUpload?: boolean
+      maxRetries?: number
+      retryDelay?: number
+    }
+  ): Promise<ApiResponse<T>> {
+    const maxRetries = config?.maxRetries || 3
+    const retryDelay = config?.retryDelay || 1000
+    const isFileUpload = config?.isFileUpload || false
+    
+    // Calculate intelligent timeout based on data size
+    let timeout = 300000 // 5 minutes default
+    
+    if (isFileUpload && data instanceof FormData) {
+      // Estimate file size from FormData
+      let totalSize = 0
+      for (const [key, value] of data.entries()) {
+        if (value instanceof File) {
+          totalSize += value.size
+        }
+      }
+      
+      // Calculate timeout: 1 minute per 10MB + 2 minutes base
+      timeout = Math.max(120000, Math.min(1800000, (totalSize / (10 * 1024 * 1024)) * 60000 + 120000))
+    }
+
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const requestConfig = {
+          ...config,
+          timeout,
+          // Remove our custom properties
+          isFileUpload: undefined,
+          maxRetries: undefined,
+          retryDelay: undefined,
+        }
+
+        const response = await this.axiosInstance.put<ApiResponse<T>>(url, data, requestConfig)
+        return this.processResponse(response)
+      } catch (error) {
+        const isLastAttempt = attempt === maxRetries
+        const shouldRetry = this.shouldRetry(error, attempt, maxRetries)
+        
+        if (isLastAttempt || !shouldRetry) {
+          return this.handleError<T>(error)
+        }
+        
+        // Wait before retry with exponential backoff
+        const delay = retryDelay * Math.pow(2, attempt)
+        console.log(`Upload attempt ${attempt + 1} failed, retrying in ${delay}ms...`)
+        await this.sleep(delay)
+      }
+    }
+    
+    return this.handleError<T>(new Error('Max retries exceeded'))
   }
 
   async post<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {

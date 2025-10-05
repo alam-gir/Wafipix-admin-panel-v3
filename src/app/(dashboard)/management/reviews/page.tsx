@@ -12,6 +12,7 @@ import { reviewsApi } from '@/lib/api/reviews'
 import { Review, CreateReviewRequest, UpdateReviewRequest } from '@/types/api'
 import { ReviewFormModal } from '@/components/reviews/review-form'
 import { UnifiedReviewModal } from '@/components/reviews/unified-review-modal'
+import { AxiosProgressEvent } from 'axios'
 
 export default function ReviewsPage() {
   const [reviews, setReviews] = useState<Review[]>([])
@@ -57,10 +58,10 @@ export default function ReviewsPage() {
     }
   }
 
-  const handleCreate = async (data: CreateReviewRequest | UpdateReviewRequest) => {
+  const handleCreate = async (data: CreateReviewRequest | UpdateReviewRequest, config?: { onUploadProgress?: (progressEvent: AxiosProgressEvent) => void }) => {
     try {
       setIsSubmitting(true)
-      const response = await reviewsApi.create(data as CreateReviewRequest)
+      const response = await reviewsApi.create(data as CreateReviewRequest, config)
       if (response.success && response.data) {
         setReviews(prev => [response.data!, ...prev])
         setIsModalOpen(false)
@@ -74,12 +75,12 @@ export default function ReviewsPage() {
     }
   }
 
-  const handleUpdate = async (data: UpdateReviewRequest) => {
+  const handleUpdate = async (data: UpdateReviewRequest, config?: { onUploadProgress?: (progressEvent: AxiosProgressEvent) => void }) => {
     if (!editingReview) return
 
     try {
       setIsSubmitting(true)
-      const response = await reviewsApi.update(editingReview.id, data)
+      const response = await reviewsApi.update(editingReview.id, data, config)
       if (response.success && response.data) {
         setReviews(prev => 
           prev.map(review => 

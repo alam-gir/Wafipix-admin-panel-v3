@@ -16,6 +16,7 @@ import { Upload, X, ImageIcon, Video, FileText } from 'lucide-react'
 import { toast } from 'sonner'
 import { WorkResponse, CreateWorkRequest, UpdateWorkRequest, Service, FileResponse } from '@/types/api'
 import { AxiosProgressEvent } from 'axios'
+import { validateFile, formatFileSize } from '@/lib/utils/file-upload'
 import RichTextEditor from '../ui/rich-text-editor'
 
 // Helper function to count text content without HTML tags
@@ -107,30 +108,24 @@ export function WorkForm({ work, services, isOpen, onClose, onSubmit, isLoading 
 
   const handleFileChange = (type: 'coverVideo' | 'coverImage' | 'profileVideo' | 'profileImage', file: File | null) => {
     if (file) {
-      // Validate file type
-      const isVideo = file.type.startsWith('video/')
-      const isImage = file.type.startsWith('image/')
+      // Enhanced file validation
+      const isVideo = type.includes('Video')
+      const isImage = type.includes('Image')
       
-      if (!isVideo && !isImage) {
-        toast.error('Please select a valid image or video file')
-        return
-      }
+      const validation = validateFile(file, {
+        maxSize: 100 * 1024 * 1024, // 100MB limit
+        allowedTypes: isVideo ? ['video/'] : ['image/'],
+        allowedExtensions: isVideo 
+          ? ['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm'] 
+          : ['jpg', 'jpeg', 'png', 'gif', 'webp']
+      })
       
-      // Validate file size (100MB max)
-      if (file.size > 100 * 1024 * 1024) {
-        toast.error('File size must be less than 100MB')
+      if (!validation.isValid) {
+        toast.error(validation.error || 'Invalid file')
         return
       }
 
-      // Validate file type matches expected type
-      if (type.includes('Video') && !isVideo) {
-        toast.error('Please select a video file')
-        return
-      }
-      if (type.includes('Image') && !isImage) {
-        toast.error('Please select an image file')
-        return
-      }
+      toast.success(`File selected: ${formatFileSize(file.size)}`)
     }
 
     switch (type) {

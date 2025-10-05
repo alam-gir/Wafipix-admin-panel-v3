@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -9,11 +9,14 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Image from 'next/image'
 import { Textarea } from '@/components/ui/textarea'
+import { Progress } from '@/components/ui/progress'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { toast } from 'sonner'
 import { Star, Upload, X } from 'lucide-react'
 import { Review, CreateReviewRequest, UpdateReviewRequest } from '@/types/api'
+import { validateFile, formatFileSize, createProgressHandler, UploadProgress } from '@/lib/utils/file-upload'
+import { AxiosProgressEvent } from 'axios'
 
 const reviewSchema = z.object({
   platform: z.string()
@@ -35,7 +38,7 @@ type ReviewFormData = z.infer<typeof reviewSchema>
 
 interface ReviewFormModalProps {
   review?: Review
-  onSubmit: (data: CreateReviewRequest | UpdateReviewRequest) => Promise<void>
+  onSubmit: (data: CreateReviewRequest | UpdateReviewRequest, config?: { onUploadProgress?: (progressEvent: AxiosProgressEvent) => void }) => Promise<void>
   onCancel: () => void
   isLoading?: boolean
   availablePlatforms?: string[]
@@ -55,6 +58,8 @@ export function ReviewFormModal({
   const [previewUrl, setPreviewUrl] = useState<string>('')
   const [isCustomPlatform, setIsCustomPlatform] = useState(false)
   const [customPlatformName, setCustomPlatformName] = useState('')
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [isUploading, setIsUploading] = useState(false)
 
   const {
     register,
@@ -75,18 +80,34 @@ export function ReviewFormModal({
 
   const watchedRating = watch('rating')
 
+  // Reset form when review prop changes
+  useEffect(() => {
+    reset({
+      platform: review?.platform || '',
+      clientName: review?.clientName || '',
+      rating: review?.rating || 5,
+      reviewText: review?.reviewText || ''
+    })
+    
+    // Reset image states
+    setSelectedImage(null)
+    setPreviewUrl('')
+    setIsCustomPlatform(false)
+    setCustomPlatformName('')
+  }, [review, reset])
+
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        toast.error('Please select an image file')
-        return
-      }
+      // Enhanced file validation
+      const validation = validateFile(file, {
+        maxSize: 5 * 1024 * 1024, // 5MB limit for review images
+        allowedTypes: ['image/'],
+        allowedExtensions: ['jpg', 'jpeg', 'png', 'gif', 'webp']
+      })
       
-      // Validate file size (5MB limit)
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error('File size must be less than 5MB')
+      if (!validation.isValid) {
+        toast.error(validation.error || 'Invalid file')
         return
       }
 
@@ -96,6 +117,8 @@ export function ReviewFormModal({
       // Create preview URL
       const url = URL.createObjectURL(file)
       setPreviewUrl(url)
+      
+      toast.success(`Image selected: ${formatFileSize(file.size)}`)
     }
   }
 
@@ -111,16 +134,30 @@ export function ReviewFormModal({
   const handleFormSubmit = async (data: ReviewFormData) => {
     try {
       setIsSubmitting(true)
-      await onSubmit(data)
+      setIsUploading(true)
+      setUploadProgress(0)
+
+      // Create enhanced progress handler
+      const progressHandler = createProgressHandler((progress: UploadProgress) => {
+        setUploadProgress(progress.percentage)
+      })
+
+      await onSubmit(data, {
+        onUploadProgress: progressHandler
+      })
+      
       reset()
       clearImage()
       setIsCustomPlatform(false)
       setCustomPlatformName('')
+      setUploadProgress(100)
     } catch (error) {
       console.error('Form submission error:', error)
       toast.error('Failed to save review')
     } finally {
       setIsSubmitting(false)
+      setIsUploading(false)
+      setUploadProgress(0)
     }
   }
 
@@ -305,6 +342,17 @@ export function ReviewFormModal({
               )}
             </div>
           </div>
+
+          {/* Upload Progress */}
+          {isUploading && uploadProgress > 0 && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Uploading image...</span>
+                <span className="font-medium">{uploadProgress}%</span>
+              </div>
+              <Progress value={uploadProgress} className="w-full" />
+            </div>
+          )}
 
           <DialogFooter>
             <Button

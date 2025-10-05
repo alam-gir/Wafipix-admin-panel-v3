@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import { createProgressHandler, UploadProgress } from '@/lib/utils/file-upload'
 import { AxiosProgressEvent } from 'axios'
 import { toast } from 'sonner'
 import { Plus, Upload, X } from 'lucide-react'
@@ -231,13 +232,13 @@ export default function PortfolioDetailPage() {
       setUploadingGallery(true)
       setUploadProgress(0)
 
+      // Create enhanced progress handler
+      const progressHandler = createProgressHandler((progress: UploadProgress) => {
+        setUploadProgress(progress.percentage)
+      })
+
       const config = {
-        onUploadProgress: (progressEvent: AxiosProgressEvent) => {
-          if (progressEvent.total) {
-            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-            setUploadProgress(percentCompleted)
-          }
-        }
+        onUploadProgress: progressHandler
       }
 
       const response = await portfolioApi.addFilesToGallery(galleryId, files, config)

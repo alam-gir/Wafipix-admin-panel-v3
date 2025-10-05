@@ -8,11 +8,14 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Image from 'next/image'
 import { Textarea } from '@/components/ui/textarea'
+import { Progress } from '@/components/ui/progress'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Star, Edit, Trash2, Eye, EyeOff, Save, X, Upload } from 'lucide-react'
 import { toast } from 'sonner'
 import { Review, UpdateReviewRequest } from '@/types/api'
 import { reviewsApi } from '@/lib/api/reviews'
+import { validateFile, formatFileSize, createProgressHandler, UploadProgress } from '@/lib/utils/file-upload'
+import { AxiosProgressEvent } from 'axios'
 
 interface UnifiedReviewModalProps {
   review: Review | null
@@ -40,6 +43,8 @@ export function UnifiedReviewModal({
   const [customPlatformName, setCustomPlatformName] = useState('')
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string>('')
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [isUploading, setIsUploading] = useState(false)
   const [formData, setFormData] = useState({
     platform: '',
     clientName: '',
@@ -98,21 +103,23 @@ export function UnifiedReviewModal({
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        toast.error('Please select a valid image file')
-        return
-      }
+      // Enhanced file validation
+      const validation = validateFile(file, {
+        maxSize: 5 * 1024 * 1024, // 5MB limit for review images
+        allowedTypes: ['image/'],
+        allowedExtensions: ['jpg', 'jpeg', 'png', 'gif', 'webp']
+      })
       
-      // Validate file size (5MB max)
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error('Image size must be less than 5MB')
+      if (!validation.isValid) {
+        toast.error(validation.error || 'Invalid file')
         return
       }
 
       setSelectedImage(file)
       const url = URL.createObjectURL(file)
       setPreviewUrl(url)
+      
+      toast.success(`Image selected: ${formatFileSize(file.size)}`)
     }
   }
 
@@ -128,6 +135,14 @@ export function UnifiedReviewModal({
     if (!review) return
 
     try {
+      setIsUploading(true)
+      setUploadProgress(0)
+
+      // Create enhanced progress handler
+      const progressHandler = createProgressHandler((progress: UploadProgress) => {
+        setUploadProgress(progress.percentage)
+      })
+
       const updateData: UpdateReviewRequest = {
         platform: formData.platform,
         clientName: formData.clientName || undefined,
@@ -136,7 +151,10 @@ export function UnifiedReviewModal({
         reviewImage: selectedImage || undefined
       }
 
-      const response = await reviewsApi.update(review.id, updateData)
+      const response = await reviewsApi.update(review.id, updateData, {
+        onUploadProgress: progressHandler
+      })
+      
       if (response.success && response.data) {
         // Update the review prop with new data
         Object.assign(review, response.data)
@@ -144,10 +162,14 @@ export function UnifiedReviewModal({
         onUpdateReview(response.data)
         toast.success('Review updated successfully')
         setIsEditing(false)
+        setUploadProgress(100)
       }
     } catch (error) {
       console.error('Failed to update review:', error)
       toast.error('Failed to update review')
+    } finally {
+      setIsUploading(false)
+      setUploadProgress(0)
     }
   }
 
@@ -363,6 +385,17 @@ export function UnifiedReviewModal({
           </div>
         </div>
 
+        {/* Upload Progress */}
+        {isUploading && uploadProgress > 0 && (
+          <div className="space-y-2 px-6">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Uploading image...</span>
+              <span className="font-medium">{uploadProgress}%</span>
+            </div>
+            <Progress value={uploadProgress} className="w-full" />
+          </div>
+        )}
+
         <DialogFooter className="flex flex-col sm:flex-row gap-3">
           {isEditing ? (
             <>
@@ -378,10 +411,10 @@ export function UnifiedReviewModal({
               <Button
                 onClick={handleSave}
                 className="flex-1 gap-2"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isUploading}
               >
                 <Save className="h-4 w-4" />
-                Save Changes
+                {isUploading ? 'Uploading...' : 'Save Changes'}
               </Button>
             </>
           ) : (

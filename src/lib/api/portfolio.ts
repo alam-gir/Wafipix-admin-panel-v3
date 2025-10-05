@@ -61,10 +61,13 @@ export const portfolioApi = {
     if (data.profileVideo) formData.append('profileVideo', data.profileVideo)
     if (data.profileImage) formData.append('profileImage', data.profileImage)
 
-    const response = await apiService.post<WorkResponse>('/v3/admin/works', formData, {
+    const response = await apiService.postWithRetry<WorkResponse>('/v3/admin/works', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
+      isFileUpload: true,
+      maxRetries: 3,
+      retryDelay: 2000,
       ...config
     })
 
@@ -89,10 +92,13 @@ export const portfolioApi = {
     if (data.profileVideo) formData.append('profileVideo', data.profileVideo)
     if (data.profileImage) formData.append('profileImage', data.profileImage)
 
-    const response = await apiService.put<WorkResponse>(`/v3/admin/works/${id}`, formData, {
+    const response = await apiService.putWithRetry<WorkResponse>(`/v3/admin/works/${id}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
+      isFileUpload: true,
+      maxRetries: 3,
+      retryDelay: 2000,
       ...config
     })
 
@@ -157,10 +163,13 @@ export const portfolioApi = {
       })
     }
 
-    const response = await apiService.post<GalleryResponse>(`/v3/admin/works/${workId}/galleries`, formData, {
+    const response = await apiService.postWithRetry<GalleryResponse>(`/v3/admin/works/${workId}/galleries`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
+      isFileUpload: true,
+      maxRetries: 3,
+      retryDelay: 2000,
       ...config
     })
 
@@ -208,10 +217,13 @@ export const portfolioApi = {
       formData.append('files', file)
     })
 
-    const response = await apiService.post<GalleryResponse>(`/v3/admin/works/galleries/${galleryId}/files`, formData, {
+    const response = await apiService.postWithRetry<GalleryResponse>(`/v3/admin/works/galleries/${galleryId}/files`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
+      isFileUpload: true,
+      maxRetries: 3,
+      retryDelay: 2000,
       ...config
     })
 

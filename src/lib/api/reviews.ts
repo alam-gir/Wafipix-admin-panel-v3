@@ -57,7 +57,7 @@ export const reviewsApi = {
    * Create a new review
    * Handles Spring Boot ResponseUtil.success() responses with multipart form data
    */
-  create: async (data: CreateReviewRequest): Promise<ApiResponse<Review>> => {
+  create: async (data: CreateReviewRequest, config?: { onUploadProgress?: (progressEvent: any) => void }): Promise<ApiResponse<Review>> => {
     // Create FormData for multipart request
     const formData = new FormData()
     formData.append('platform', data.platform)
@@ -66,10 +66,14 @@ export const reviewsApi = {
     if (data.reviewText) formData.append('reviewText', data.reviewText)
     if (data.reviewImage) formData.append('reviewImage', data.reviewImage)
 
-    const response = await apiService.post<Review>('/v3/admin/reviews', formData, {
+    const response = await apiService.postWithRetry<Review>('/v3/admin/reviews', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
+      isFileUpload: true,
+      maxRetries: 3,
+      retryDelay: 2000,
+      ...config
     })
     
     // Validate response structure
@@ -84,7 +88,7 @@ export const reviewsApi = {
    * Update an existing review
    * Handles Spring Boot ResponseUtil.success() responses with multipart form data
    */
-  update: async (id: string, data: UpdateReviewRequest): Promise<ApiResponse<Review>> => {
+  update: async (id: string, data: UpdateReviewRequest, config?: { onUploadProgress?: (progressEvent: any) => void }): Promise<ApiResponse<Review>> => {
     // Create FormData for multipart request
     const formData = new FormData()
     if (data.platform) formData.append('platform', data.platform)
@@ -93,10 +97,14 @@ export const reviewsApi = {
     if (data.reviewText) formData.append('reviewText', data.reviewText)
     if (data.reviewImage) formData.append('reviewImage', data.reviewImage)
 
-    const response = await apiService.put<Review>(`/v3/admin/reviews/${id}`, formData, {
+    const response = await apiService.putWithRetry<Review>(`/v3/admin/reviews/${id}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
+      isFileUpload: true,
+      maxRetries: 3,
+      retryDelay: 2000,
+      ...config
     })
     
     // Validate response structure

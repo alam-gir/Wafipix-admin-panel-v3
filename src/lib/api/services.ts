@@ -40,7 +40,7 @@ export const servicesApi = {
   },
 
   // Create new service
-  create: async (data: CreateServiceRequest): Promise<ServiceResponse> => {
+  create: async (data: CreateServiceRequest, config?: { onUploadProgress?: (progressEvent: any) => void }): Promise<ServiceResponse> => {
     const formData = new FormData()
     formData.append('title', data.title)
     formData.append('subtitle', data.subtitle)
@@ -48,16 +48,20 @@ export const servicesApi = {
     formData.append('icon', data.icon)
     formData.append('categoryId', data.categoryId)
 
-    const response = await apiService.post<Service>('/v3/admin/services', formData, {
+    const response = await apiService.postWithRetry<Service>('/v3/admin/services', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
+      isFileUpload: true,
+      maxRetries: 3,
+      retryDelay: 2000,
+      ...config
     })
     return response as ServiceResponse
   },
 
   // Update service
-  update: async (id: string, data: UpdateServiceRequest): Promise<ServiceResponse> => {
+  update: async (id: string, data: UpdateServiceRequest, config?: { onUploadProgress?: (progressEvent: any) => void }): Promise<ServiceResponse> => {
     const formData = new FormData()
     formData.append('title', data.title)
     formData.append('subtitle', data.subtitle)
@@ -67,10 +71,14 @@ export const servicesApi = {
     }
     formData.append('categoryId', data.categoryId)
 
-    const response = await apiService.put<Service>(`/v3/admin/services/${id}`, formData, {
+    const response = await apiService.putWithRetry<Service>(`/v3/admin/services/${id}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
+      isFileUpload: true,
+      maxRetries: 3,
+      retryDelay: 2000,
+      ...config
     })
     return response as ServiceResponse
   },

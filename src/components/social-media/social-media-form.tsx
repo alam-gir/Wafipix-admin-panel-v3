@@ -1,13 +1,20 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { toast } from 'sonner'
 import { SocialMedia, CreateSocialMediaRequest, UpdateSocialMediaRequest } from '@/types/api'
 
@@ -28,9 +35,16 @@ interface SocialMediaFormProps {
   onSubmit: (data: CreateSocialMediaRequest | UpdateSocialMediaRequest) => Promise<void>
   onCancel: () => void
   isLoading?: boolean
+  isOpen: boolean
 }
 
-export function SocialMediaForm({ socialMedia, onSubmit, onCancel, isLoading = false }: SocialMediaFormProps) {
+export function SocialMediaForm({ 
+  socialMedia, 
+  onSubmit, 
+  onCancel, 
+  isLoading = false, 
+  isOpen 
+}: SocialMediaFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const {
@@ -45,6 +59,14 @@ export function SocialMediaForm({ socialMedia, onSubmit, onCancel, isLoading = f
       url: socialMedia?.url || ''
     }
   })
+
+  // Reset form when socialMedia prop changes
+  useEffect(() => {
+    reset({
+      title: socialMedia?.title || '',
+      url: socialMedia?.url || ''
+    })
+  }, [socialMedia, reset])
 
   const handleFormSubmit = async (data: SocialMediaFormData) => {
     try {
@@ -65,19 +87,20 @@ export function SocialMediaForm({ socialMedia, onSubmit, onCancel, isLoading = f
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>
-          {socialMedia ? 'Edit Social Media Link' : 'Add New Social Media Link'}
-        </CardTitle>
-        <CardDescription>
-          {socialMedia 
-            ? 'Update the social media link information'
-            : 'Add a new social media link to your website'
-          }
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+    <Dialog open={isOpen} onOpenChange={handleCancel}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>
+            {socialMedia ? 'Edit Social Media Link' : 'Add New Social Media Link'}
+          </DialogTitle>
+          <DialogDescription>
+            {socialMedia 
+              ? 'Update the social media link information'
+              : 'Add a new social media link to your website'
+            }
+          </DialogDescription>
+        </DialogHeader>
+        
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="title">Title</Label>
@@ -105,7 +128,7 @@ export function SocialMediaForm({ socialMedia, onSubmit, onCancel, isLoading = f
             )}
           </div>
 
-          <div className="flex justify-end space-x-2">
+          <DialogFooter>
             <Button
               type="button"
               variant="outline"
@@ -120,9 +143,9 @@ export function SocialMediaForm({ socialMedia, onSubmit, onCancel, isLoading = f
             >
               {isSubmitting ? 'Saving...' : (socialMedia ? 'Update' : 'Create')}
             </Button>
-          </div>
+          </DialogFooter>
         </form>
-      </CardContent>
-    </Card>
+      </DialogContent>
+    </Dialog>
   )
 }

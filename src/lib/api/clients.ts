@@ -42,7 +42,7 @@ export const clientsApi = {
    * Create a new client
    * Handles Spring Boot ResponseUtil.success() responses with multipart form data
    */
-  createClient: async (clientData: CreateClientRequest): Promise<ApiResponse<Client>> => {
+  createClient: async (clientData: CreateClientRequest, config?: { onUploadProgress?: (progressEvent: any) => void }): Promise<ApiResponse<Client>> => {
     // Create FormData for multipart request
     const formData = new FormData()
     formData.append('title', clientData.title)
@@ -59,10 +59,14 @@ export const clientsApi = {
       formData.append('logo', clientData.logo)
     }
 
-    const response = await apiService.post<Client>('/v3/admin/clients', formData, {
+    const response = await apiService.postWithRetry<Client>('/v3/admin/clients', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
+      isFileUpload: true,
+      maxRetries: 3,
+      retryDelay: 2000,
+      ...config
     })
     
     // Validate response structure
@@ -77,7 +81,7 @@ export const clientsApi = {
    * Update an existing client
    * Handles Spring Boot ResponseUtil.success() responses with multipart form data
    */
-  updateClient: async (id: string, clientData: UpdateClientRequest): Promise<ApiResponse<Client>> => {
+  updateClient: async (id: string, clientData: UpdateClientRequest, config?: { onUploadProgress?: (progressEvent: any) => void }): Promise<ApiResponse<Client>> => {
     // Create FormData for multipart request
     const formData = new FormData()
     formData.append('title', clientData.title)
@@ -94,10 +98,14 @@ export const clientsApi = {
       formData.append('logo', clientData.logo)
     }
 
-    const response = await apiService.put<Client>(`/v3/admin/clients/${id}`, formData, {
+    const response = await apiService.putWithRetry<Client>(`/v3/admin/clients/${id}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
+      isFileUpload: true,
+      maxRetries: 3,
+      retryDelay: 2000,
+      ...config
     })
     
     // Validate response structure

@@ -10,6 +10,7 @@ import { toast } from 'sonner'
 import { AxiosProgressEvent } from 'axios'
 import { advertisementVideosApi } from '@/lib/api/advertisement-videos'
 import { AdvertisementVideo } from '@/types/api'
+import { createProgressHandler, formatFileSize, validateFile, getRetryConfig, UploadProgress } from '@/lib/utils/file-upload'
 
 export default function HeroVideoPage() {
   const [heroVideo, setHeroVideo] = useState<AdvertisementVideo | null>(null)
@@ -48,15 +49,15 @@ export default function HeroVideoPage() {
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
-      // Validate file type
-      if (!file.type.startsWith('video/')) {
-        toast.error('Please select a video file')
-        return
-      }
+      // Validate file using enhanced validation
+      const validation = validateFile(file, {
+        maxSize: 500 * 1024 * 1024, // 500MB limit for videos
+        allowedTypes: ['video/'],
+        allowedExtensions: ['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm']
+      })
       
-      // Validate file size (100MB limit)
-      if (file.size > 100 * 1024 * 1024) {
-        toast.error('File size must be less than 100MB')
+      if (!validation.isValid) {
+        toast.error(validation.error || 'Invalid file')
         return
       }
 
@@ -65,6 +66,8 @@ export default function HeroVideoPage() {
       // Create preview URL
       const url = URL.createObjectURL(file)
       setPreviewUrl(url)
+      
+      toast.success(`File selected: ${formatFileSize(file.size)}`)
     }
   }
 
@@ -80,45 +83,15 @@ export default function HeroVideoPage() {
       setUploadSpeed('')
       setEstimatedTime('')
 
-      // Create FormData
-      const formData = new FormData()
-      formData.append('videoFile', selectedFile)
-
-      // Track upload progress
-      const startTime = Date.now()
-      let lastProgressTime = startTime
-      let lastLoaded = 0
+      // Create enhanced progress handler
+      const progressHandler = createProgressHandler((progress: UploadProgress) => {
+        setUploadProgress(progress.percentage)
+        setUploadSpeed(progress.speed)
+        setEstimatedTime(progress.estimatedTime)
+      })
 
       const response = await advertisementVideosApi.createOrUpdateAdvertisementVideo(selectedFile, {
-        onUploadProgress: (progressEvent: AxiosProgressEvent) => {
-          if (progressEvent.lengthComputable && progressEvent.total) {
-            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-            setUploadProgress(progress)
-
-            // Calculate upload speed
-            const currentTime = Date.now()
-            const timeDiff = currentTime - lastProgressTime
-            const loadedDiff = progressEvent.loaded - lastLoaded
-
-            if (timeDiff > 1000) { // Update every second
-              const speed = (loadedDiff / timeDiff) * 1000 // bytes per second
-              const speedMBps = (speed / (1024 * 1024)).toFixed(2)
-              setUploadSpeed(`${speedMBps} MB/s`)
-
-              // Calculate estimated time remaining
-              const remainingBytes = progressEvent.total - progressEvent.loaded
-              const estimatedSeconds = remainingBytes / speed
-              if (estimatedSeconds > 60) {
-                setEstimatedTime(`${Math.round(estimatedSeconds / 60)}m ${Math.round(estimatedSeconds % 60)}s`)
-              } else {
-                setEstimatedTime(`${Math.round(estimatedSeconds)}s`)
-              }
-
-              lastProgressTime = currentTime
-              lastLoaded = progressEvent.loaded
-            }
-          }
-        }
+        onUploadProgress: progressHandler
       })
 
       if (response.success && response.data) {

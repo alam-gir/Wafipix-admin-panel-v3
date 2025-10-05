@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { Progress } from '@/components/ui/progress'
 import {
   Dialog,
   DialogContent,
@@ -21,6 +22,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { toast } from 'sonner'
 import { clientsApi } from '@/lib/api/clients'
 import { Client, CreateClientRequest, UpdateClientRequest } from '@/types/api'
+import { validateFile, formatFileSize, createProgressHandler, UploadProgress } from '@/lib/utils/file-upload'
+import { AxiosProgressEvent } from 'axios'
 
 const clientSchema = z.object({
   title: z.string().min(1, 'Title is required').max(100, 'Title must not exceed 100 characters'),
@@ -42,6 +45,8 @@ export function ClientForm({ isOpen, onClose, onSuccess, client, isEditMode = fa
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [logoPreview, setLogoPreview] = useState<string>('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [isUploading, setIsUploading] = useState(false)
 
   const {
     register,
@@ -76,15 +81,15 @@ export function ClientForm({ isOpen, onClose, onSuccess, client, isEditMode = fa
   const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        toast.error('Please select an image file')
-        return
-      }
+      // Enhanced file validation
+      const validation = validateFile(file, {
+        maxSize: 5 * 1024 * 1024, // 5MB limit for client logos
+        allowedTypes: ['image/'],
+        allowedExtensions: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg']
+      })
       
-      // Validate file size (5MB limit)
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error('File size must be less than 5MB')
+      if (!validation.isValid) {
+        toast.error(validation.error || 'Invalid file')
         return
       }
 
@@ -96,6 +101,8 @@ export function ClientForm({ isOpen, onClose, onSuccess, client, isEditMode = fa
         setLogoPreview(e.target?.result as string)
       }
       reader.readAsDataURL(file)
+      
+      toast.success(`Logo selected: ${formatFileSize(file.size)}`)
     }
   }
 
@@ -107,6 +114,13 @@ export function ClientForm({ isOpen, onClose, onSuccess, client, isEditMode = fa
   const onSubmit = async (data: ClientFormData) => {
     try {
       setIsSubmitting(true)
+      setIsUploading(true)
+      setUploadProgress(0)
+
+      // Create enhanced progress handler
+      const progressHandler = createProgressHandler((progress: UploadProgress) => {
+        setUploadProgress(progress.percentage)
+      })
 
       const requestData: CreateClientRequest | UpdateClientRequest = {
         title: data.title,
@@ -116,10 +130,14 @@ export function ClientForm({ isOpen, onClose, onSuccess, client, isEditMode = fa
       }
 
       if (isEditMode && client) {
-        await clientsApi.updateClient(client.id, requestData as UpdateClientRequest)
+        await clientsApi.updateClient(client.id, requestData as UpdateClientRequest, {
+          onUploadProgress: progressHandler
+        })
         toast.success('Client updated successfully')
       } else {
-        await clientsApi.createClient(requestData as CreateClientRequest)
+        await clientsApi.createClient(requestData as CreateClientRequest, {
+          onUploadProgress: progressHandler
+        })
         toast.success('Client created successfully')
       }
 
@@ -129,6 +147,8 @@ export function ClientForm({ isOpen, onClose, onSuccess, client, isEditMode = fa
       toast.error('Failed to save client')
     } finally {
       setIsSubmitting(false)
+      setIsUploading(false)
+      setUploadProgress(0)
     }
   }
 
@@ -246,6 +266,17 @@ export function ClientForm({ isOpen, onClose, onSuccess, client, isEditMode = fa
               <p className="text-sm text-red-500">{errors.companyUrl.message}</p>
             )}
           </div>
+
+          {/* Upload Progress */}
+          {isUploading && uploadProgress > 0 && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Uploading logo...</span>
+                <span className="font-medium">{uploadProgress}%</span>
+              </div>
+              <Progress value={uploadProgress} className="w-full" />
+            </div>
+          )}
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={handleClose}>

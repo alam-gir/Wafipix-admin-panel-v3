@@ -12,9 +12,12 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Loader2, Save, X } from 'lucide-react'
+import { Progress } from '@/components/ui/progress'
+import { Loader2, Save, X, Upload } from 'lucide-react'
 import { Service, CreateServiceRequest, UpdateServiceRequest, Category } from '@/types/api'
 import { categoriesApi } from '@/lib/api/categories'
+import { validateFile, formatFileSize, createProgressHandler, UploadProgress } from '@/lib/utils/file-upload'
+import { AxiosProgressEvent } from 'axios'
 
 // Zod schema for service validation
 const serviceSchema = z.object({
@@ -42,7 +45,7 @@ type ServiceFormData = z.infer<typeof serviceSchema>
 
 interface ServiceFormProps {
   service?: Service
-  onSubmit: (data: CreateServiceRequest | UpdateServiceRequest) => Promise<void>
+  onSubmit: (data: CreateServiceRequest | UpdateServiceRequest, config?: { onUploadProgress?: (progressEvent: AxiosProgressEvent) => void }) => Promise<void>
   onCancel: () => void
   isLoading?: boolean
 }
@@ -52,6 +55,8 @@ export function ServiceForm({ service, onSubmit, onCancel, isLoading = false }: 
   const [categories, setCategories] = useState<Category[]>([])
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [isUploading, setIsUploading] = useState(false)
 
   const {
     register,
@@ -78,12 +83,23 @@ export function ServiceForm({ service, onSubmit, onCancel, isLoading = false }: 
     loadCategories()
   }, [])
 
-  // Set preview for existing service icon
+  // Reset form when service prop changes
   useEffect(() => {
+    reset({
+      title: service?.title || '',
+      subtitle: service?.subtitle || '',
+      description: service?.description || '',
+      categoryId: service?.categoryId || '',
+      icon: undefined
+    })
+    
+    // Set preview for existing service icon
     if (service?.icon && !selectedFile) {
       setPreviewUrl(service.icon)
+    } else if (!service) {
+      setPreviewUrl(null)
     }
-  }, [service?.icon, selectedFile])
+  }, [service, reset, selectedFile])
 
   const loadCategories = async () => {
     try {
@@ -99,18 +115,40 @@ export function ServiceForm({ service, onSubmit, onCancel, isLoading = false }: 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
+      // Enhanced file validation
+      const validation = validateFile(file, {
+        maxSize: 5 * 1024 * 1024, // 5MB limit for service icons
+        allowedTypes: ['image/'],
+        allowedExtensions: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg']
+      })
+      
+      if (!validation.isValid) {
+        setError(validation.error || 'Invalid file')
+        return
+      }
+
       setSelectedFile(file)
       setValue('icon', file)
       
       // Create preview URL
       const url = URL.createObjectURL(file)
       setPreviewUrl(url)
+      
+      // Clear any previous errors
+      setError(null)
     }
   }
 
   const handleFormSubmit = async (data: ServiceFormData) => {
     try {
       setError(null)
+      setIsUploading(true)
+      setUploadProgress(0)
+      
+      // Create enhanced progress handler
+      const progressHandler = createProgressHandler((progress: UploadProgress) => {
+        setUploadProgress(progress.percentage)
+      })
       
       const submitData = {
         title: data.title,
@@ -120,12 +158,19 @@ export function ServiceForm({ service, onSubmit, onCancel, isLoading = false }: 
         icon: data.icon || selectedFile
       }
 
-      await onSubmit(submitData as CreateServiceRequest | UpdateServiceRequest)
+      await onSubmit(submitData as CreateServiceRequest | UpdateServiceRequest, {
+        onUploadProgress: progressHandler
+      })
+      
       reset()
       setSelectedFile(null)
       setPreviewUrl(null)
+      setUploadProgress(100)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
+    } finally {
+      setIsUploading(false)
+      setUploadProgress(0)
     }
   }
 
@@ -264,6 +309,17 @@ export function ServiceForm({ service, onSubmit, onCancel, isLoading = false }: 
               </p>
             </div>
           </div>
+
+          {/* Upload Progress */}
+          {isUploading && uploadProgress > 0 && (
+            <div className="space-y-2 pt-4">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Uploading icon...</span>
+                <span className="font-medium">{uploadProgress}%</span>
+              </div>
+              <Progress value={uploadProgress} className="w-full" />
+            </div>
+          )}
 
           <div className="flex items-center justify-end space-x-3 pt-4">
             <Button

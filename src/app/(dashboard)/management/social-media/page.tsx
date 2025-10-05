@@ -15,7 +15,7 @@ export default function SocialMediaPage() {
   const [socialMediaLinks, setSocialMediaLinks] = useState<SocialMedia[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-  const [showForm, setShowForm] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingSocialMedia, setEditingSocialMedia] = useState<SocialMedia | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -45,7 +45,7 @@ export default function SocialMediaPage() {
       const response = await socialMediaApi.create(data)
       if (response.success && response.data) {
         setSocialMediaLinks(prev => [response.data!, ...prev])
-        setShowForm(false)
+        setIsModalOpen(false)
         toast.success('Social media link created successfully')
       }
     } catch (error) {
@@ -69,6 +69,7 @@ export default function SocialMediaPage() {
           )
         )
         setEditingSocialMedia(null)
+        setIsModalOpen(false)
         toast.success('Social media link updated successfully')
       }
     } catch (error) {
@@ -98,11 +99,11 @@ export default function SocialMediaPage() {
 
   const handleEdit = (socialMedia: SocialMedia) => {
     setEditingSocialMedia(socialMedia)
-    setShowForm(false)
+    setIsModalOpen(true)
   }
 
   const handleCancelForm = () => {
-    setShowForm(false)
+    setIsModalOpen(false)
     setEditingSocialMedia(null)
   }
 
@@ -134,7 +135,7 @@ export default function SocialMediaPage() {
             <Share2 className="h-3 w-3" />
             {socialMediaLinks.length} Links
           </Badge>
-          <Button onClick={() => setShowForm(true)} className="gap-2">
+          <Button onClick={() => setIsModalOpen(true)} className="gap-2">
             <Plus className="h-4 w-4" />
             Add Link
           </Button>
@@ -156,15 +157,14 @@ export default function SocialMediaPage() {
         </CardContent>
       </Card>
 
-      {/* Form */}
-      {(showForm || editingSocialMedia) && (
-        <SocialMediaForm
-          socialMedia={editingSocialMedia || undefined}
-          onSubmit={editingSocialMedia ? handleUpdate : handleCreate}
-          onCancel={handleCancelForm}
-          isLoading={isSubmitting}
-        />
-      )}
+      {/* Modal Form */}
+      <SocialMediaForm
+        socialMedia={editingSocialMedia || undefined}
+        onSubmit={editingSocialMedia ? handleUpdate : handleCreate}
+        onCancel={handleCancelForm}
+        isLoading={isSubmitting}
+        isOpen={isModalOpen}
+      />
 
       {/* Social Media Links List */}
       <div className="grid gap-4">
@@ -187,7 +187,7 @@ export default function SocialMediaPage() {
                   </p>
                 </div>
                 {!searchTerm && (
-                  <Button onClick={() => setShowForm(true)} className="gap-2">
+                  <Button onClick={() => setIsModalOpen(true)} className="gap-2">
                     <Plus className="h-4 w-4" />
                     Add First Link
                   </Button>
