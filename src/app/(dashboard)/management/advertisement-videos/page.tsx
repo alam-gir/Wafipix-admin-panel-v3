@@ -7,10 +7,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { toast } from 'sonner'
-import { AxiosProgressEvent } from 'axios'
 import { advertisementVideosApi } from '@/lib/api/advertisement-videos'
 import { AdvertisementVideo } from '@/types/api'
-import { createProgressHandler, formatFileSize, validateFile, getRetryConfig, UploadProgress } from '@/lib/utils/file-upload'
+import { createProgressHandler, formatFileSize, validateFile, UploadProgress } from '@/lib/utils/file-upload'
 
 export default function HeroVideoPage() {
   const [heroVideo, setHeroVideo] = useState<AdvertisementVideo | null>(null)

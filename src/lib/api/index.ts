@@ -254,7 +254,7 @@ class ApiService {
     if (isFileUpload && data instanceof FormData) {
       // Estimate file size from FormData
       let totalSize = 0
-      for (const [key, value] of data.entries()) {
+      for (const [, value] of data.entries()) {
         if (value instanceof File) {
           totalSize += value.size
         }
@@ -315,7 +315,7 @@ class ApiService {
     if (isFileUpload && data instanceof FormData) {
       // Estimate file size from FormData
       let totalSize = 0
-      for (const [key, value] of data.entries()) {
+      for (const [, value] of data.entries()) {
         if (value instanceof File) {
           totalSize += value.size
         }

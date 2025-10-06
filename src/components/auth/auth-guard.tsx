@@ -27,7 +27,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
         console.error('AuthGuard: Auth check failed:', error)
       })
     }
-  }, []) // Empty dependency array - only run once on mount
+  }, [checkAuth]) // Include checkAuth in dependencies
 
   // Show loading while checking auth
   if (isLoading) {

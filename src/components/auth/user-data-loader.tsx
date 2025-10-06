@@ -16,7 +16,7 @@ export function UserDataLoader() {
     checkAuth().catch(() => {
       // Silently fail - middleware will handle redirects
     })
-  }, []) // Only run once on mount
+  }, [checkAuth]) // Include checkAuth in dependencies
 
   return null // This component doesn't render anything
 }

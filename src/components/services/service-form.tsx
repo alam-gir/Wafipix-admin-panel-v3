@@ -16,7 +16,7 @@ import { Progress } from '@/components/ui/progress'
 import { Loader2, Save, X, Upload } from 'lucide-react'
 import { Service, CreateServiceRequest, UpdateServiceRequest, Category } from '@/types/api'
 import { categoriesApi } from '@/lib/api/categories'
-import { validateFile, formatFileSize, createProgressHandler, UploadProgress } from '@/lib/utils/file-upload'
+import { validateFile, createProgressHandler, UploadProgress } from '@/lib/utils/file-upload'
 import { AxiosProgressEvent } from 'axios'
 
 // Zod schema for service validation

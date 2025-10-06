@@ -15,7 +15,6 @@ import { toast } from 'sonner'
 import { Review, UpdateReviewRequest } from '@/types/api'
 import { reviewsApi } from '@/lib/api/reviews'
 import { validateFile, formatFileSize, createProgressHandler, UploadProgress } from '@/lib/utils/file-upload'
-import { AxiosProgressEvent } from 'axios'
 
 interface UnifiedReviewModalProps {
   review: Review | null

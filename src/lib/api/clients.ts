@@ -1,5 +1,6 @@
 import { apiService } from './index'
 import { ApiErrorHandler } from './error-handler'
+import { AxiosProgressEvent } from 'axios'
 import { 
   ApiResponse, 
   Client,
@@ -42,7 +43,7 @@ export const clientsApi = {
    * Create a new client
    * Handles Spring Boot ResponseUtil.success() responses with multipart form data
    */
-  createClient: async (clientData: CreateClientRequest, config?: { onUploadProgress?: (progressEvent: any) => void }): Promise<ApiResponse<Client>> => {
+  createClient: async (clientData: CreateClientRequest, config?: { onUploadProgress?: (progressEvent: AxiosProgressEvent) => void }): Promise<ApiResponse<Client>> => {
     // Create FormData for multipart request
     const formData = new FormData()
     formData.append('title', clientData.title)
@@ -81,7 +82,7 @@ export const clientsApi = {
    * Update an existing client
    * Handles Spring Boot ResponseUtil.success() responses with multipart form data
    */
-  updateClient: async (id: string, clientData: UpdateClientRequest, config?: { onUploadProgress?: (progressEvent: any) => void }): Promise<ApiResponse<Client>> => {
+  updateClient: async (id: string, clientData: UpdateClientRequest, config?: { onUploadProgress?: (progressEvent: AxiosProgressEvent) => void }): Promise<ApiResponse<Client>> => {
     // Create FormData for multipart request
     const formData = new FormData()
     formData.append('title', clientData.title)

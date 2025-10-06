@@ -11,7 +11,7 @@ export interface UploadError {
 /**
  * Enhanced error handling for file uploads
  */
-export function handleUploadError(error: unknown, context: string = 'Upload'): UploadError {
+export function handleUploadError(error: unknown, _context: string = 'Upload'): UploadError {
   const isAxiosError = (err: unknown): err is { 
     response?: { status: number; data?: { message?: string } }; 
     code?: string; 

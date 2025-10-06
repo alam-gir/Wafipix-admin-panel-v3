@@ -110,7 +110,6 @@ export function WorkForm({ work, services, isOpen, onClose, onSubmit, isLoading 
     if (file) {
       // Enhanced file validation
       const isVideo = type.includes('Video')
-      const isImage = type.includes('Image')
       
       const validation = validateFile(file, {
         maxSize: 100 * 1024 * 1024, // 100MB limit

@@ -1,4 +1,5 @@
 import { apiService } from './index'
+import { AxiosProgressEvent } from 'axios'
 import { 
   Service, 
   CreateServiceRequest, 
@@ -40,7 +41,7 @@ export const servicesApi = {
   },
 
   // Create new service
-  create: async (data: CreateServiceRequest, config?: { onUploadProgress?: (progressEvent: any) => void }): Promise<ServiceResponse> => {
+  create: async (data: CreateServiceRequest, config?: { onUploadProgress?: (progressEvent: AxiosProgressEvent) => void }): Promise<ServiceResponse> => {
     const formData = new FormData()
     formData.append('title', data.title)
     formData.append('subtitle', data.subtitle)
@@ -61,7 +62,7 @@ export const servicesApi = {
   },
 
   // Update service
-  update: async (id: string, data: UpdateServiceRequest, config?: { onUploadProgress?: (progressEvent: any) => void }): Promise<ServiceResponse> => {
+  update: async (id: string, data: UpdateServiceRequest, config?: { onUploadProgress?: (progressEvent: AxiosProgressEvent) => void }): Promise<ServiceResponse> => {
     const formData = new FormData()
     formData.append('title', data.title)
     formData.append('subtitle', data.subtitle)

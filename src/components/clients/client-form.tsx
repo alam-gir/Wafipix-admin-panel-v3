@@ -23,7 +23,6 @@ import { toast } from 'sonner'
 import { clientsApi } from '@/lib/api/clients'
 import { Client, CreateClientRequest, UpdateClientRequest } from '@/types/api'
 import { validateFile, formatFileSize, createProgressHandler, UploadProgress } from '@/lib/utils/file-upload'
-import { AxiosProgressEvent } from 'axios'
 
 const clientSchema = z.object({
   title: z.string().min(1, 'Title is required').max(100, 'Title must not exceed 100 characters'),

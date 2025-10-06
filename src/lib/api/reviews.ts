@@ -1,5 +1,6 @@
 import { apiService } from './index'
 import { ApiErrorHandler } from './error-handler'
+import { AxiosProgressEvent } from 'axios'
 import { 
   ApiResponse, 
   Review,
@@ -57,7 +58,7 @@ export const reviewsApi = {
    * Create a new review
    * Handles Spring Boot ResponseUtil.success() responses with multipart form data
    */
-  create: async (data: CreateReviewRequest, config?: { onUploadProgress?: (progressEvent: any) => void }): Promise<ApiResponse<Review>> => {
+  create: async (data: CreateReviewRequest, config?: { onUploadProgress?: (progressEvent: AxiosProgressEvent) => void }): Promise<ApiResponse<Review>> => {
     // Create FormData for multipart request
     const formData = new FormData()
     formData.append('platform', data.platform)
@@ -88,7 +89,7 @@ export const reviewsApi = {
    * Update an existing review
    * Handles Spring Boot ResponseUtil.success() responses with multipart form data
    */
-  update: async (id: string, data: UpdateReviewRequest, config?: { onUploadProgress?: (progressEvent: any) => void }): Promise<ApiResponse<Review>> => {
+  update: async (id: string, data: UpdateReviewRequest, config?: { onUploadProgress?: (progressEvent: AxiosProgressEvent) => void }): Promise<ApiResponse<Review>> => {
     // Create FormData for multipart request
     const formData = new FormData()
     if (data.platform) formData.append('platform', data.platform)
