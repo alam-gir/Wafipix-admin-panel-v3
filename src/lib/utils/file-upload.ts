@@ -87,6 +87,11 @@ export function validateFile(file: File, options: {
   allowedTypes?: string[]
   allowedExtensions?: string[]
 }): { isValid: boolean; error?: string } {
+  // Check if we're in browser environment
+  if (typeof window === 'undefined') {
+    return { isValid: true } // Skip validation on server
+  }
+
   const { maxSize = 100 * 1024 * 1024, allowedTypes = [], allowedExtensions = [] } = options
 
   // Check file size
@@ -125,6 +130,11 @@ export function validateFile(file: File, options: {
 export function createProgressHandler(
   onProgress: (progress: UploadProgress) => void
 ) {
+  // Check if we're in browser environment
+  if (typeof window === 'undefined') {
+    return () => {} // Return empty function on server
+  }
+
   const stats: UploadStats = {
     startTime: Date.now(),
     lastProgressTime: Date.now(),

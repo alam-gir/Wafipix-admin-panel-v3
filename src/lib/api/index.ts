@@ -251,8 +251,8 @@ class ApiService {
     // Calculate intelligent timeout based on data size
     let timeout = 300000 // 5 minutes default
     
-    if (isFileUpload && data instanceof FormData) {
-      // Estimate file size from FormData
+    if (isFileUpload && data instanceof FormData && typeof window !== 'undefined') {
+      // Estimate file size from FormData (only in browser)
       let totalSize = 0
       for (const [, value] of data.entries()) {
         if (value instanceof File) {
@@ -312,8 +312,8 @@ class ApiService {
     // Calculate intelligent timeout based on data size
     let timeout = 300000 // 5 minutes default
     
-    if (isFileUpload && data instanceof FormData) {
-      // Estimate file size from FormData
+    if (isFileUpload && data instanceof FormData && typeof window !== 'undefined') {
+      // Estimate file size from FormData (only in browser)
       let totalSize = 0
       for (const [, value] of data.entries()) {
         if (value instanceof File) {
