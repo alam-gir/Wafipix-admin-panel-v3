@@ -21,8 +21,6 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Copy environment file for build-time variables
-COPY .env.local .env.local
 
 # Install pnpm globally in builder stage if needed
 RUN if [ -f pnpm-lock.yaml ]; then npm install -g pnpm; fi

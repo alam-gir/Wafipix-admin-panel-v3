@@ -46,7 +46,7 @@ export const servicesApi = {
     formData.append('title', data.title)
     formData.append('subtitle', data.subtitle)
     formData.append('description', data.description)
-    formData.append('icon', data.icon)
+    formData.append('icon', data.icon as File)
     formData.append('categoryId', data.categoryId)
 
     const response = await apiService.postWithRetry<Service>('/v3/admin/services', formData, {
@@ -68,7 +68,7 @@ export const servicesApi = {
     formData.append('subtitle', data.subtitle)
     formData.append('description', data.description)
     if (data.icon) {
-      formData.append('icon', data.icon)
+      formData.append('icon', data.icon as File)
     }
     formData.append('categoryId', data.categoryId)
 

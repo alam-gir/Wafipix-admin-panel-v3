@@ -21,7 +21,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { toast } from 'sonner'
 import { clientsApi } from '@/lib/api/clients'
-import { Client, CreateClientRequest, UpdateClientRequest } from '@/types/api'
+import { Client, CreateClientRequest, UpdateClientRequest, FileObject } from '@/types/api'
 import { validateFile, formatFileSize, createProgressHandler, UploadProgress } from '@/lib/utils/file-upload'
 
 const clientSchema = z.object({
@@ -41,7 +41,7 @@ interface ClientFormProps {
 }
 
 export function ClientForm({ isOpen, onClose, onSuccess, client, isEditMode = false }: ClientFormProps) {
-  const [logoFile, setLogoFile] = useState<File | null>(null)
+  const [logoFile, setLogoFile] = useState<FileObject | null>(null)
   const [logoPreview, setLogoPreview] = useState<string>('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)

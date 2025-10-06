@@ -7,7 +7,7 @@ import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Plus, Trash2, Upload } from 'lucide-react'
-import { GalleryResponse } from '@/types/api'
+import { GalleryResponse, FileObject } from '@/types/api'
 import { GalleryItem } from './gallery-item'
 import { FilePreview } from './file-preview'
 import { FloatingUploadButton } from './floating-upload-button'
@@ -17,7 +17,7 @@ interface GallerySectionProps {
   onToggleMobileGrid: (galleryId: string, isMobileGrid: boolean) => void
   onDeleteGallery: (galleryId: string) => void
   onRemoveFile: (galleryId: string, itemId: string) => void
-  onAddFiles: (galleryId: string, files: File[]) => void
+  onAddFiles: (galleryId: string, files: FileObject[]) => void
   isSubmitting?: boolean
   isUploading?: boolean
   uploadProgress?: number
@@ -34,7 +34,7 @@ export function GallerySection({
   uploadProgress = 0
 }: GallerySectionProps) {
   const [showAddFiles, setShowAddFiles] = useState(false)
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+  const [selectedFiles, setSelectedFiles] = useState<FileObject[]>([])
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])

@@ -57,7 +57,7 @@ export const clientsApi = {
     }
     
     if (clientData.logo) {
-      formData.append('logo', clientData.logo)
+      formData.append('logo', clientData.logo as File)
     }
 
     const response = await apiService.postWithRetry<Client>('/v3/admin/clients', formData, {
@@ -96,7 +96,7 @@ export const clientsApi = {
     }
     
     if (clientData.logo) {
-      formData.append('logo', clientData.logo)
+      formData.append('logo', clientData.logo as File)
     }
 
     const response = await apiService.putWithRetry<Client>(`/v3/admin/clients/${id}`, formData, {

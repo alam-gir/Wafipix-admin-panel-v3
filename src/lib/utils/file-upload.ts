@@ -1,4 +1,5 @@
 import { AxiosProgressEvent } from 'axios'
+import { FileObject } from '@/types/api'
 
 export interface UploadProgress {
   loaded: number
@@ -82,7 +83,7 @@ export function formatFileSize(bytes: number): string {
 /**
  * Validate file before upload
  */
-export function validateFile(file: File, options: {
+export function validateFile(file: FileObject, options: {
   maxSize?: number // in bytes
   allowedTypes?: string[]
   allowedExtensions?: string[]

@@ -3,7 +3,8 @@ import { ApiErrorHandler } from './error-handler'
 import { AxiosProgressEvent } from 'axios'
 import { 
   ApiResponse, 
-  AdvertisementVideo
+  AdvertisementVideo,
+  FileObject
 } from '@/types/api'
 
 export const advertisementVideosApi = {
@@ -27,12 +28,12 @@ export const advertisementVideosApi = {
    * Handles Spring Boot ResponseUtil.success() responses with multipart form data
    */
   createOrUpdateAdvertisementVideo: async (
-    videoFile: File, 
+    videoFile: FileObject, 
     options?: { onUploadProgress?: (progressEvent: AxiosProgressEvent) => void }
   ): Promise<ApiResponse<AdvertisementVideo>> => {
     // Create FormData for multipart request
     const formData = new FormData()
-    formData.append('videoFile', videoFile)
+    formData.append('videoFile', videoFile as File)
 
     const response = await apiService.postWithRetry<AdvertisementVideo>('/v3/admin/advertisement-videos', formData, {
       headers: {

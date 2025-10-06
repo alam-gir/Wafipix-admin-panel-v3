@@ -22,7 +22,7 @@ import {
   Upload
 } from 'lucide-react'
 import { toast } from 'sonner'
-import { WorkResponse, GalleryResponse, Service } from '@/types/api'
+import { WorkResponse, GalleryResponse, Service, FileObject } from '@/types/api'
 import { portfolioApi } from '@/lib/api/portfolio'
 
 interface WorkDetailModalProps {
@@ -50,7 +50,7 @@ export function WorkDetailModal({
   const [galleries, setGalleries] = useState<GalleryResponse[]>([])
   const [loadingGalleries, setLoadingGalleries] = useState(false)
   const [showAddGallery, setShowAddGallery] = useState(false)
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+  const [selectedFiles, setSelectedFiles] = useState<FileObject[]>([])
   const [isMobileGrid, setIsMobileGrid] = useState(false)
   const [uploadingGallery, setUploadingGallery] = useState(false)
 

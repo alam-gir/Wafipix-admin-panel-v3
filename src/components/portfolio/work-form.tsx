@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Progress } from '@/components/ui/progress'
 import { Upload, X, ImageIcon, Video, FileText } from 'lucide-react'
 import { toast } from 'sonner'
-import { WorkResponse, CreateWorkRequest, UpdateWorkRequest, Service, FileResponse } from '@/types/api'
+import { WorkResponse, CreateWorkRequest, UpdateWorkRequest, Service, FileResponse, FileObject } from '@/types/api'
 import { AxiosProgressEvent } from 'axios'
 import { validateFile, formatFileSize } from '@/lib/utils/file-upload'
 import RichTextEditor from '../ui/rich-text-editor'
@@ -61,10 +61,10 @@ interface WorkFormProps {
 }
 
 export function WorkForm({ work, services, isOpen, onClose, onSubmit, isLoading = false }: WorkFormProps) {
-  const [coverVideo, setCoverVideo] = useState<File | null>(null)
-  const [coverImage, setCoverImage] = useState<File | null>(null)
-  const [profileVideo, setProfileVideo] = useState<File | null>(null)
-  const [profileImage, setProfileImage] = useState<File | null>(null)
+  const [coverVideo, setCoverVideo] = useState<FileObject | null>(null)
+  const [coverImage, setCoverImage] = useState<FileObject | null>(null)
+  const [profileVideo, setProfileVideo] = useState<FileObject | null>(null)
+  const [profileImage, setProfileImage] = useState<FileObject | null>(null)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [isUploading, setIsUploading] = useState(false)
 
@@ -106,7 +106,7 @@ export function WorkForm({ work, services, isOpen, onClose, onSubmit, isLoading 
     setProfileImage(null)
   }, [work, reset])
 
-  const handleFileChange = (type: 'coverVideo' | 'coverImage' | 'profileVideo' | 'profileImage', file: File | null) => {
+  const handleFileChange = (type: 'coverVideo' | 'coverImage' | 'profileVideo' | 'profileImage', file: FileObject | null) => {
     if (file) {
       // Enhanced file validation
       const isVideo = type.includes('Video')
@@ -255,7 +255,7 @@ export function WorkForm({ work, services, isOpen, onClose, onSubmit, isLoading 
   const renderFileInput = (
     type: 'coverVideo' | 'coverImage' | 'profileVideo' | 'profileImage',
     label: string,
-    currentFile: File | null,
+    currentFile: FileObject | null,
     existingFile?: FileResponse
   ) => {
     const isVideo = type.includes('Video')
@@ -329,13 +329,13 @@ export function WorkForm({ work, services, isOpen, onClose, onSubmit, isLoading 
             <div className="w-full h-24 bg-gray-100 rounded-lg overflow-hidden">
               {isVideo ? (
                 <video
-                  src={URL.createObjectURL(currentFile)}
+                  src={URL.createObjectURL(currentFile as File)}
                   className="w-full h-full object-cover"
                   controls
                 />
               ) : (
                 <Image
-                  src={URL.createObjectURL(currentFile)}
+                  src={URL.createObjectURL(currentFile as File)}
                   alt={currentFile.name}
                   width={200}
                   height={200}

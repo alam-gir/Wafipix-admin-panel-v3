@@ -65,7 +65,7 @@ export const reviewsApi = {
     if (data.clientName) formData.append('clientName', data.clientName)
     formData.append('rating', data.rating.toString())
     if (data.reviewText) formData.append('reviewText', data.reviewText)
-    if (data.reviewImage) formData.append('reviewImage', data.reviewImage)
+    if (data.reviewImage) formData.append('reviewImage', data.reviewImage as File)
 
     const response = await apiService.postWithRetry<Review>('/v3/admin/reviews', formData, {
       headers: {
@@ -96,7 +96,7 @@ export const reviewsApi = {
     if (data.clientName) formData.append('clientName', data.clientName)
     if (data.rating) formData.append('rating', data.rating.toString())
     if (data.reviewText) formData.append('reviewText', data.reviewText)
-    if (data.reviewImage) formData.append('reviewImage', data.reviewImage)
+    if (data.reviewImage) formData.append('reviewImage', data.reviewImage as File)
 
     const response = await apiService.putWithRetry<Review>(`/v3/admin/reviews/${id}`, formData, {
       headers: {

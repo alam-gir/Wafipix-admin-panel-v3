@@ -11,7 +11,8 @@ import {
   CreateGalleryRequest,
   UpdateGalleryRequest,
   RemoveGalleryFilesRequest,
-  Page
+  Page,
+  FileObject
 } from '@/types/api'
 
 interface UploadConfig {
@@ -56,10 +57,10 @@ export const portfolioApi = {
     formData.append('title', data.title)
     formData.append('serviceId', data.serviceId)
     if (data.description) formData.append('description', data.description)
-    if (data.coverVideo) formData.append('coverVideo', data.coverVideo)
-    if (data.coverImage) formData.append('coverImage', data.coverImage)
-    if (data.profileVideo) formData.append('profileVideo', data.profileVideo)
-    if (data.profileImage) formData.append('profileImage', data.profileImage)
+    if (data.coverVideo) formData.append('coverVideo', data.coverVideo as File)
+    if (data.coverImage) formData.append('coverImage', data.coverImage as File)
+    if (data.profileVideo) formData.append('profileVideo', data.profileVideo as File)
+    if (data.profileImage) formData.append('profileImage', data.profileImage as File)
 
     const response = await apiService.postWithRetry<WorkResponse>('/v3/admin/works', formData, {
       headers: {
@@ -87,10 +88,10 @@ export const portfolioApi = {
     if (data.title) formData.append('title', data.title)
     if (data.serviceId) formData.append('serviceId', data.serviceId)
     if (data.description) formData.append('description', data.description)
-    if (data.coverVideo) formData.append('coverVideo', data.coverVideo)
-    if (data.coverImage) formData.append('coverImage', data.coverImage)
-    if (data.profileVideo) formData.append('profileVideo', data.profileVideo)
-    if (data.profileImage) formData.append('profileImage', data.profileImage)
+    if (data.coverVideo) formData.append('coverVideo', data.coverVideo as File)
+    if (data.coverImage) formData.append('coverImage', data.coverImage as File)
+    if (data.profileVideo) formData.append('profileVideo', data.profileVideo as File)
+    if (data.profileImage) formData.append('profileImage', data.profileImage as File)
 
     const response = await apiService.putWithRetry<WorkResponse>(`/v3/admin/works/${id}`, formData, {
       headers: {
@@ -159,7 +160,7 @@ export const portfolioApi = {
     if (data.isMobileGrid !== undefined) formData.append('isMobileGrid', data.isMobileGrid.toString())
     if (data.files) {
       data.files.forEach((file) => {
-        formData.append('files', file)
+        formData.append('files', file as File)
       })
     }
 
@@ -211,10 +212,10 @@ export const portfolioApi = {
    * Add files to gallery
    * Handles Spring Boot ResponseUtil.success() responses with multipart form data
    */
-  addFilesToGallery: async (galleryId: string, files: File[], config?: UploadConfig): Promise<ApiResponse<GalleryResponse>> => {
+  addFilesToGallery: async (galleryId: string, files: FileObject[], config?: UploadConfig): Promise<ApiResponse<GalleryResponse>> => {
     const formData = new FormData()
     files.forEach((file) => {
-      formData.append('files', file)
+      formData.append('files', file as File)
     })
 
     const response = await apiService.postWithRetry<GalleryResponse>(`/v3/admin/works/galleries/${galleryId}/files`, formData, {

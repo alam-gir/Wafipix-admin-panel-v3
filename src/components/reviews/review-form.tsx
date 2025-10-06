@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { toast } from 'sonner'
 import { Star, Upload, X } from 'lucide-react'
-import { Review, CreateReviewRequest, UpdateReviewRequest } from '@/types/api'
+import { Review, CreateReviewRequest, UpdateReviewRequest, FileObject } from '@/types/api'
 import { validateFile, formatFileSize, createProgressHandler, UploadProgress } from '@/lib/utils/file-upload'
 import { AxiosProgressEvent } from 'axios'
 
@@ -31,7 +31,7 @@ const reviewSchema = z.object({
   reviewText: z.string()
     .max(5000, 'Review text must not exceed 5000 characters')
     .optional(),
-  reviewImage: z.instanceof(File).optional()
+  reviewImage: z.any().optional()
 })
 
 type ReviewFormData = z.infer<typeof reviewSchema>
@@ -54,7 +54,7 @@ export function ReviewFormModal({
   isOpen 
 }: ReviewFormModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [selectedImage, setSelectedImage] = useState<File | null>(null)
+  const [selectedImage, setSelectedImage] = useState<FileObject | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string>('')
   const [isCustomPlatform, setIsCustomPlatform] = useState(false)
   const [customPlatformName, setCustomPlatformName] = useState('')

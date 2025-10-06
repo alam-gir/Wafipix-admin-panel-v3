@@ -13,8 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Progress } from '@/components/ui/progress'
-import { Loader2, Save, X, Upload } from 'lucide-react'
-import { Service, CreateServiceRequest, UpdateServiceRequest, Category } from '@/types/api'
+import { Loader2, Save, X } from 'lucide-react'
+import { Service, CreateServiceRequest, UpdateServiceRequest, Category, FileObject } from '@/types/api'
 import { categoriesApi } from '@/lib/api/categories'
 import { validateFile, createProgressHandler, UploadProgress } from '@/lib/utils/file-upload'
 import { AxiosProgressEvent } from 'axios'
@@ -37,7 +37,7 @@ const serviceSchema = z.object({
     .string()
     .min(1, 'Category is required'),
   icon: z
-    .instanceof(File)
+    .any()
     .optional()
 })
 
@@ -53,7 +53,7 @@ interface ServiceFormProps {
 export function ServiceForm({ service, onSubmit, onCancel, isLoading = false }: ServiceFormProps) {
   const [error, setError] = useState<string | null>(null)
   const [categories, setCategories] = useState<Category[]>([])
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [selectedFile, setSelectedFile] = useState<FileObject | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [isUploading, setIsUploading] = useState(false)
@@ -301,7 +301,9 @@ export function ServiceForm({ service, onSubmit, onCancel, isLoading = false }: 
                   </div>
                 )}
                 {!service && errors.icon && (
-                  <p className="text-sm text-red-600">{errors.icon.message}</p>
+                  <p className="text-sm text-red-600">
+                    {String((errors.icon as { message?: string })?.message || 'Icon is required')}
+                  </p>
                 )}
               </div>
               <p className="text-xs text-muted-foreground">

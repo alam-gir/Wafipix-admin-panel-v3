@@ -1,3 +1,11 @@
+// File type for SSR compatibility - represents a file object without referencing browser File constructor
+export interface FileObject {
+  name: string;
+  size: number;
+  type: string;
+  lastModified: number;
+}
+
 // API Response Types based on the Java ApiResponse class
 export interface FieldError {
   field: string;
@@ -101,7 +109,7 @@ export interface CreateServiceRequest {
   title: string;
   subtitle: string;
   description: string;
-  icon: File;
+  icon: FileObject;
   categoryId: string;
 }
 
@@ -109,7 +117,7 @@ export interface UpdateServiceRequest {
   title: string;
   subtitle: string;
   description: string;
-  icon?: File;
+  icon?: FileObject;
   categoryId: string;
 }
 
@@ -243,14 +251,14 @@ export interface CreateClientRequest {
   title: string;
   description?: string;
   companyUrl?: string;
-  logo?: File;
+  logo?: FileObject;
 }
 
 export interface UpdateClientRequest {
   title: string;
   description?: string;
   companyUrl?: string;
-  logo?: File;
+  logo?: FileObject;
 }
 
 export type ClientResponse = ApiResponse<Client>
@@ -267,7 +275,7 @@ export interface AdvertisementVideo {
 }
 
 export interface CreateAdvertisementVideoRequest {
-  videoFile: File;
+  videoFile: FileObject;
 }
 
 export type AdvertisementVideoResponse = ApiResponse<AdvertisementVideo>
@@ -316,7 +324,7 @@ export interface CreateReviewRequest {
   clientName?: string;
   rating: number;
   reviewText?: string;
-  reviewImage?: File;
+  reviewImage?: FileObject;
 }
 
 export interface UpdateReviewRequest {
@@ -324,7 +332,7 @@ export interface UpdateReviewRequest {
   clientName?: string;
   rating?: number;
   reviewText?: string;
-  reviewImage?: File;
+  reviewImage?: FileObject;
 }
 
 export type ReviewResponse = ApiResponse<Review>
@@ -429,25 +437,25 @@ export interface CreateWorkRequest {
   title: string;
   serviceId: string;
   description?: string;
-  coverVideo?: File;
-  coverImage?: File;
-  profileVideo?: File;
-  profileImage?: File;
+  coverVideo?: FileObject;
+  coverImage?: FileObject;
+  profileVideo?: FileObject;
+  profileImage?: FileObject;
 }
 
 export interface UpdateWorkRequest {
   title?: string;
   serviceId?: string;
   description?: string;
-  coverVideo?: File;
-  coverImage?: File;
-  profileVideo?: File;
-  profileImage?: File;
+  coverVideo?: FileObject;
+  coverImage?: FileObject;
+  profileVideo?: FileObject;
+  profileImage?: FileObject;
 }
 
 export interface CreateGalleryRequest {
   isMobileGrid?: boolean;
-  files?: File[];
+  files?: FileObject[];
 }
 
 export interface UpdateGalleryRequest {

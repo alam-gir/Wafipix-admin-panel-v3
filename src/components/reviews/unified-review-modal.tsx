@@ -12,7 +12,7 @@ import { Progress } from '@/components/ui/progress'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Star, Edit, Trash2, Eye, EyeOff, Save, X, Upload } from 'lucide-react'
 import { toast } from 'sonner'
-import { Review, UpdateReviewRequest } from '@/types/api'
+import { Review, UpdateReviewRequest, FileObject } from '@/types/api'
 import { reviewsApi } from '@/lib/api/reviews'
 import { validateFile, formatFileSize, createProgressHandler, UploadProgress } from '@/lib/utils/file-upload'
 
@@ -40,7 +40,7 @@ export function UnifiedReviewModal({
   const [isEditing, setIsEditing] = useState(false)
   const [isCustomPlatform, setIsCustomPlatform] = useState(false)
   const [customPlatformName, setCustomPlatformName] = useState('')
-  const [selectedImage, setSelectedImage] = useState<File | null>(null)
+  const [selectedImage, setSelectedImage] = useState<FileObject | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string>('')
   const [uploadProgress, setUploadProgress] = useState(0)
   const [isUploading, setIsUploading] = useState(false)

@@ -3,28 +3,31 @@
 import { Button } from '@/components/ui/button'
 import { X } from 'lucide-react'
 import Image from 'next/image'
+import { FileObject } from '@/types/api'
 
 interface FilePreviewProps {
-  file: File
+  file: FileObject
   index: number
   onRemove: (index: number) => void
 }
 
 export function FilePreview({ file, index, onRemove }: FilePreviewProps) {
   const isVideo = file.type.startsWith('video/')
+  // Type assertion for browser APIs - safe because this component only runs in browser
+  const browserFile = file as File
 
   return (
     <div className="relative group flex-1 min-w-0 border-2 border-dashed border-blue-300">
       <div className="w-full bg-gray-100 rounded-lg overflow-hidden">
         {isVideo ? (
           <video
-            src={URL.createObjectURL(file)}
+            src={URL.createObjectURL(browserFile)}
             className="w-full h-auto object-cover"
             controls
           />
         ) : (
           <Image
-            src={URL.createObjectURL(file)}
+            src={URL.createObjectURL(browserFile)}
             alt={file.name}
             width={200}
             height={200}

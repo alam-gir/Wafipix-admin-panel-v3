@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import Image from 'next/image'
-import { WorkResponse, GalleryResponse, Service, UpdateWorkRequest } from '@/types/api'
+import { WorkResponse, GalleryResponse, Service, UpdateWorkRequest, FileObject } from '@/types/api'
 import { portfolioApi } from '@/lib/api/portfolio'
 import { servicesApi } from '@/lib/api/services'
 import { WorkForm } from '@/components/portfolio/work-form'
@@ -227,7 +227,7 @@ export default function PortfolioDetailPage() {
     }
   }
 
-  const handleAddFilesToGallery = async (galleryId: string, files: File[]) => {
+  const handleAddFilesToGallery = async (galleryId: string, files: FileObject[]) => {
     try {
       setUploadingGallery(true)
       setUploadProgress(0)
