@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Custom hook for Send OTP form logic
  */
@@ -43,11 +45,8 @@ export function useSendOtp() {
       const response = await sendOtpToEmail(email.trim());
       
       // Redirect directly to verify-otp page
-      const verifyUrl = new URL('/verify-otp', window.location.origin);
-      verifyUrl.searchParams.set('email', email.trim());
-      verifyUrl.searchParams.set('redirect', redirectTo);
-      verifyUrl.searchParams.set('expiresAt', response.expiresAt);
-      router.push(verifyUrl.toString());
+      const verifyUrl = `/verify-otp?email=${encodeURIComponent(email.trim())}&redirect=${encodeURIComponent(redirectTo)}&expiresAt=${encodeURIComponent(response.expiresAt)}`;
+      router.push(verifyUrl);
     } catch (err: any) {
       const { message, fieldErrors, errorType } = handleApiError(err);
       

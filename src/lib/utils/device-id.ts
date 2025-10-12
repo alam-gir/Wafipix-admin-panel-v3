@@ -26,6 +26,11 @@ function generateDeviceId(): string {
  * If not found, generate new one and store it
  */
 export function getDeviceId(): string {
+  if (typeof window === 'undefined') {
+    // Return a temporary ID for SSR
+    return 'temp-device-id';
+  }
+  
   let deviceId = localStorage.getItem(DEVICE_ID_KEY);
   
   if (!deviceId) {
@@ -40,5 +45,7 @@ export function getDeviceId(): string {
  * Clear device ID from localStorage
  */
 export function clearDeviceId(): void {
-  localStorage.removeItem(DEVICE_ID_KEY);
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem(DEVICE_ID_KEY);
+  }
 }

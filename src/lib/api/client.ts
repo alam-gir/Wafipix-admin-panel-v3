@@ -35,8 +35,22 @@ const clearAuthState = async () => {
     // Import auth store and clear state
     const { useAuthStore } = await import('../../stores/auth-store');
     useAuthStore.getState().logout();
+    
+    // Reset refresh token manager
+    const { refreshTokenManager } = await import('./refresh-token-manager');
+    refreshTokenManager.reset();
   } catch (error) {
     console.error('Failed to clear auth state:', error);
+  }
+};
+
+// Helper function to check if user is authenticated
+const isUserAuthenticated = () => {
+  try {
+    const { useAuthStore } = require('../../stores/auth-store');
+    return useAuthStore.getState().isAuthenticated;
+  } catch (error) {
+    return false;
   }
 };
 
@@ -60,6 +74,12 @@ apiClient.interceptors.response.use(
     // Handle 401 errors (token expired)
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
+
+      // Check if user is still authenticated before attempting refresh
+      if (!isUserAuthenticated()) {
+        console.log('User not authenticated, skipping token refresh');
+        return Promise.reject(error);
+      }
 
       try {
         // Import refresh token manager

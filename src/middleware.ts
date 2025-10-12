@@ -88,6 +88,9 @@ export async function middleware(request: NextRequest) {
       // Not authenticated, allow access to auth pages
       console.log('User not authenticated, allowing auth page access');
     }
+    
+    // Allow access to auth pages for unauthenticated users
+    return NextResponse.next();
   }
 
   // Allow access to other routes

@@ -12,7 +12,8 @@ import {
   Menu,
   LogOut,
   Settings,
-  UserCircle
+  UserCircle,
+  Loader2
 } from 'lucide-react';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
@@ -24,6 +25,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
+import { useAuthStore } from '@/stores/auth-store';
+import { useProfile } from '@/lib/hooks/auth/use-profile';
+import { useAuth } from '@/lib/hooks/auth/use-auth';
 
 interface DashboardHeaderProps {
   onMenuClick?: () => void;
@@ -31,10 +35,19 @@ interface DashboardHeaderProps {
 
 export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const { user: authUser, isLoading: authLoading } = useAuthStore();
+  const { user: profileUser, isLoading: profileLoading } = useProfile();
+  const { logoutUser } = useAuth();
+  
+  const isLoading = authLoading || profileLoading;
+  const currentUser = profileUser || authUser;
 
-  const handleLogout = () => {
-    // TODO: Implement logout functionality
-    console.log('Logout clicked');
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
 
   return (
@@ -53,7 +66,14 @@ export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
           </Button>
           
           <h1 className="text-lg font-semibold text-gray-900 truncate">
-            Welcome back, Admin
+            {isLoading ? (
+              <div className="flex items-center space-x-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Loading...</span>
+              </div>
+            ) : (
+              `Welcome back, ${currentUser?.name || 'Admin'}`
+            )}
           </h1>
         </div>
 
@@ -97,14 +117,24 @@ export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="flex items-center space-x-3 p-2 hover:bg-gray-50">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src="/placeholder-avatar.jpg" alt="Admin" />
+                  <AvatarImage src={currentUser?.profileImage} alt={currentUser?.name || 'User'} />
                   <AvatarFallback>
-                    <User className="h-4 w-4" />
+                    {isLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <span className="text-sm font-bold">
+                        {currentUser?.name?.charAt(0).toUpperCase() || 'U'}
+                      </span>
+                    )}
                   </AvatarFallback>
                 </Avatar>
                 <div className="hidden lg:block text-left">
-                  <p className="text-sm font-medium text-gray-900">Admin User</p>
-                  <p className="text-xs text-gray-500">admin@store.com</p>
+                  <p className="text-sm font-medium text-gray-900">
+                    {isLoading ? 'Loading...' : currentUser?.name || 'User'}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {isLoading ? '...' : currentUser?.email || 'user@example.com'}
+                  </p>
                 </div>
                 <ChevronDown className="hidden lg:block h-4 w-4 text-gray-400" />
               </Button>

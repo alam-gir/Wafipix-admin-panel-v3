@@ -42,6 +42,19 @@ class RefreshTokenManager {
   isRefreshInProgress(): boolean {
     return this.isRefreshing;
   }
+
+  /**
+   * Reset refresh state (call on logout)
+   */
+  reset(): void {
+    this.isRefreshing = false;
+    this.refreshPromise = null;
+    
+    // Clear refresh flag cookie
+    if (typeof document !== 'undefined') {
+      document.cookie = 'token_refresh_in_progress=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    }
+  }
 }
 
 // Export singleton instance

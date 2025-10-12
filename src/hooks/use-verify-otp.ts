@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Custom hook for Verify OTP form logic
  */

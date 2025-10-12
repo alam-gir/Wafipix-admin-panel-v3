@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Authentication hook with SWR integration
  */
@@ -75,6 +77,19 @@ export function useAuth() {
       // Always clear local state
       logout();
       mutateProfile(undefined, false);
+      
+      // Reset refresh token manager
+      try {
+        const { refreshTokenManager } = await import('../../api/refresh-token-manager');
+        refreshTokenManager.reset();
+      } catch (error) {
+        console.warn('Failed to reset refresh token manager:', error);
+      }
+      
+      // Redirect to login page
+      if (typeof window !== 'undefined') {
+        window.location.href = '/send-otp';
+      }
     }
   }, [logout, mutateProfile]);
 

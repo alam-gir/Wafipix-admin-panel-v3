@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * SWR hook for user profile
  */
