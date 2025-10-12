@@ -4,22 +4,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerProfile } from './lib/api/server-profile';
-
-// Protected routes that require authentication
-const PROTECTED_ROUTES = [
-  '/dashboard',
-  '/orders',
-  '/payments',
-  '/profile',
-  '/settings',
-  '/management',
-];
-
-// Public routes that don't require authentication
-const PUBLIC_ROUTES = [
-  '/send-otp',
-  '/verify-otp',
-];
+import { PROTECTED_ROUTES, PUBLIC_ROUTES } from './lib/constants/routes';
 
 /**
  * Check if a path is protected

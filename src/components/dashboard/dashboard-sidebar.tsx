@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -15,58 +14,40 @@ import {
   Headphones,
   Settings,
   X,
-  ChevronLeft,
-  Eye,
   User,
-  Package
+  Package,
+  Tags,
+  CreditCard,
+  Users
 } from 'lucide-react';
+import { DASHBOARD_NAVIGATION, HELP_NAVIGATION } from '@/lib/constants/routes';
 
-const navigation = [
-  {
-    name: 'Dashboard',
-    href: '/dashboard',
-    icon: LayoutDashboard,
-    shortcut: 'D'
-  },
-  {
-    name: 'Orders',
-    href: '/orders',
-    icon: ShoppingBag
-  },
-  {
-    name: 'Products',
-    href: '/products',
-    icon: Sparkles
-  },
-  {
-    name: 'Customers',
-    href: '/customers',
-    icon: User
-  },
-  {
-    name: 'Analytics',
-    href: '/analytics',
-    icon: BarChart3
-  },
-  {
-    name: 'Inventory',
-    href: '/inventory',
-    icon: Package
-  }
-];
+// Icon mapping for dynamic icon rendering
+const iconMap = {
+  LayoutDashboard,
+  ShoppingBag,
+  Sparkles,
+  BarChart3,
+  MessageCircle,
+  Headphones,
+  Settings,
+  User,
+  Package,
+  Tags,
+  CreditCard,
+  Users
+} as const;
 
-const helpNavigation = [
-  {
-    name: 'Settings',
-    href: '/settings',
-    icon: Settings
-  },
-  {
-    name: 'Support',
-    href: '/support',
-    icon: Headphones
-  }
-];
+// Convert navigation items to include actual icon components
+const navigation = DASHBOARD_NAVIGATION.map(item => ({
+  ...item,
+  icon: iconMap[item.icon as keyof typeof iconMap]
+}));
+
+const helpNavigation = HELP_NAVIGATION.map(item => ({
+  ...item,
+  icon: iconMap[item.icon as keyof typeof iconMap]
+}));
 
 interface DashboardSidebarProps {
   isOpen: boolean;
@@ -138,7 +119,7 @@ export function DashboardSidebar({ isOpen, onClose }: DashboardSidebarProps) {
                         )} />
                         <span className="truncate">{item.name}</span>
                       </div>
-                      {item.shortcut && (
+                      {'shortcut' in item && item.shortcut && (
                         <kbd className="hidden lg:inline-flex items-center px-1.5 py-0.5 text-xs font-medium text-gray-400 bg-gray-100 rounded flex-shrink-0 ml-2">
                           {item.shortcut}
                         </kbd>
