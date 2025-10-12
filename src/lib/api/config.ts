@@ -15,4 +15,12 @@ export const API_ENDPOINTS = {
     REFRESH: '/auth/refresh',
     LOGOUT: '/auth/logout',
   },
+  CATEGORIES: {
+    CREATE: '/categories',
+    UPDATE: '/categories',
+    GET_BY_ID: '/categories',
+    GET_ALL: '/categories',
+    UPDATE_STATUS: '/categories',
+    DELETE: '/categories',
+  },
 } as const;
