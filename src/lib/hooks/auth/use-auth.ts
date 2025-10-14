@@ -32,8 +32,9 @@ export function useAuth() {
       }
       
       return response.data;
-    } catch (error: any) {
-      setError(error.message || 'Failed to send OTP');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to send OTP';
+      setError(errorMessage);
       throw error;
     }
   }, [setError]);
@@ -58,8 +59,9 @@ export function useAuth() {
       mutateProfile();
       
       return response.data;
-    } catch (error: any) {
-      setError(error.message || 'Failed to verify OTP');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to verify OTP';
+      setError(errorMessage);
       throw error;
     }
   }, [login, mutateProfile, setError]);

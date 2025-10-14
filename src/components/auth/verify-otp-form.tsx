@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
-import { useVerifyOtp } from '@/hooks/use-verify-otp';
+import { useVerifyOtp } from '@/lib/hooks/otp/use-verify-otp';
 import { Shield, Loader2, ArrowLeft } from 'lucide-react';
 
 export function VerifyOtpForm() {

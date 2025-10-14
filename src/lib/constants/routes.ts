@@ -40,12 +40,12 @@ export const DASHBOARD_NAVIGATION = [
   {
     name: 'Products',
     href: '/products',
-    icon: 'Sparkles'
+    icon: 'Package'
   },
   {
     name: 'Inventory',
     href: '/inventory',
-    icon: 'Package'
+    icon: 'Sparkles'
   },
   {
     name: 'Customers',

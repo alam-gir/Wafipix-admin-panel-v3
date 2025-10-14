@@ -8,12 +8,13 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { verifyOtpSchema, type VerifyOtpFormData } from '@/lib/schemas/auth';
 import { handleApiError, hasFieldErrors, hasGeneralErrors } from '@/lib/utils/form-error-handler';
+import { FieldError } from '@/lib/api/types/common';
 import { useAuth } from '@/lib/hooks/auth/use-auth';
 
 export function useVerifyOtp() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [fieldErrors, setFieldErrors] = useState<any[]>([]);
+  const [fieldErrors, setFieldErrors] = useState<FieldError[]>([]);
   const [timeLeft, setTimeLeft] = useState(60); // 1 minute countdown
   const [canResend, setCanResend] = useState(false);
   
@@ -61,7 +62,7 @@ export function useVerifyOtp() {
     try {
       await verifyOtpAndLogin(email, otp);
       router.push(redirectTo);
-    } catch (err: any) {
+    } catch (err: unknown) {
       const { message, fieldErrors, errorType } = handleApiError(err);
       
       // Set appropriate error message based on error type

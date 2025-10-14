@@ -6,7 +6,7 @@ import { getDeviceId } from '../utils/device-id';
 import { apiClient } from './client';
 
 class RefreshTokenManager {
-  private refreshPromise: Promise<any> | null = null;
+  private refreshPromise: Promise<boolean> | null = null;
   private isRefreshing = false;
 
   async refreshToken(): Promise<boolean> {

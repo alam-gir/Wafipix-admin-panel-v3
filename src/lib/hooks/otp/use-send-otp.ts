@@ -8,12 +8,13 @@ import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { sendOtpSchema, type SendOtpFormData } from '@/lib/schemas/auth';
 import { handleApiError, hasFieldErrors, hasGeneralErrors } from '@/lib/utils/form-error-handler';
+import { FieldError } from '@/lib/api/types/common';
 import { useAuth } from '@/lib/hooks/auth/use-auth';
 
 export function useSendOtp() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [fieldErrors, setFieldErrors] = useState<any[]>([]);
+  const [fieldErrors, setFieldErrors] = useState<FieldError[]>([]);
   const [success, setSuccess] = useState(false);
   const [expiresAt, setExpiresAt] = useState<string | null>(null);
   
@@ -47,7 +48,7 @@ export function useSendOtp() {
       // Redirect directly to verify-otp page
       const verifyUrl = `/verify-otp?email=${encodeURIComponent(email.trim())}&redirect=${encodeURIComponent(redirectTo)}&expiresAt=${encodeURIComponent(response.expiresAt)}`;
       router.push(verifyUrl);
-    } catch (err: any) {
+    } catch (err: unknown) {
       const { message, fieldErrors, errorType } = handleApiError(err);
       
       // Set appropriate error message based on error type

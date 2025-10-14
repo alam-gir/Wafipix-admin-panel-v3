@@ -2,7 +2,7 @@
  * Common API response types
  */
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T> {
   success: boolean;
   message: string;
   data: T;
@@ -23,7 +23,7 @@ export interface Pagination {
 export interface FieldError {
   field: string | null;
   message: string;
-  rejectedValue?: any;
+  rejectedValue?: unknown;
 }
 
 export interface ApiError {

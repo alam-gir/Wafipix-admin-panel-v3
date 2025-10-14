@@ -7,6 +7,7 @@ import { FieldError } from '../api/types/common';
 export interface FormError {
   message: string;
   fieldErrors: FieldError[];
+  generalError: string;
   statusCode?: number;
   errorType: 'validation' | 'business' | 'general' | 'network' | 'unknown';
 }
@@ -14,9 +15,12 @@ export interface FormError {
 /**
  * Extract error message from Zod validation error
  */
-export function getZodErrorMessage(error: any): string {
-  if (error?.errors?.[0]?.message) {
-    return error.errors[0].message;
+export function getZodErrorMessage(error: unknown): string {
+  if (error && typeof error === 'object' && 'errors' in error) {
+    const zodError = error as { errors: Array<{ message: string }> };
+    if (zodError.errors?.[0]?.message) {
+      return zodError.errors[0].message;
+    }
   }
   return 'Validation failed';
 }
@@ -24,32 +28,38 @@ export function getZodErrorMessage(error: any): string {
 /**
  * Handle API response errors based on your backend format
  */
-export function handleApiError(error: any): FormError {
+export function handleApiError(error: unknown): FormError {
   const fieldErrors: FieldError[] = [];
   let message = 'An unexpected error occurred';
   let errorType: FormError['errorType'] = 'unknown';
   let statusCode: number | undefined;
 
+  // Type guard for error with response
+  const isAxiosError = (err: unknown): err is { response: { status: number; data: unknown } } => {
+    return err !== null && typeof err === 'object' && 'response' in err;
+  };
+
   // Get status code
-  if (error?.response?.status) {
+  if (isAxiosError(error) && error.response?.status) {
     statusCode = error.response.status;
   }
 
   // Handle Axios errors with response
-  if (error?.response?.data) {
+  if (isAxiosError(error) && error.response?.data) {
     const responseData = error.response.data;
     
     // Check if it's your API response format
-    if (typeof responseData === 'object' && 'success' in responseData) {
-      message = responseData.message || 'An error occurred';
+    if (typeof responseData === 'object' && responseData !== null && 'success' in responseData) {
+      const apiResponse = responseData as { message?: string; errors?: FieldError[] };
+      message = apiResponse.message || 'An error occurred';
       
       // Handle errors array
-      if (responseData.errors && Array.isArray(responseData.errors)) {
-        fieldErrors.push(...responseData.errors);
+      if (apiResponse.errors && Array.isArray(apiResponse.errors)) {
+        fieldErrors.push(...apiResponse.errors);
         
         // Determine error type based on field errors
-        const hasFieldErrors = responseData.errors.some((err: FieldError) => err.field !== null);
-        const hasGeneralErrors = responseData.errors.some((err: FieldError) => err.field === null);
+        const hasFieldErrors = apiResponse.errors.some((err: FieldError) => err.field !== null);
+        const hasGeneralErrors = apiResponse.errors.some((err: FieldError) => err.field === null);
         
         if (hasFieldErrors) {
           errorType = 'validation';
@@ -60,19 +70,21 @@ export function handleApiError(error: any): FormError {
       }
     } else {
       // Fallback for non-standard responses
-      message = responseData.message || error.message || 'An error occurred';
+      const errorWithMessage = responseData as { message?: string };
+      message = errorWithMessage.message || 'An error occurred';
     }
   }
   
   // Handle network errors
-  else if (error?.code === 'NETWORK_ERROR' || !error?.response) {
+  else if (isAxiosError(error) && error.response === undefined) {
     errorType = 'network';
     message = 'Network error. Please check your connection.';
   }
   
   // Handle other errors
-  else if (error?.message) {
-    message = error.message;
+  else if (error && typeof error === 'object' && 'message' in error) {
+    const errorWithMessage = error as { message: string };
+    message = errorWithMessage.message;
     errorType = 'general';
   }
 
@@ -109,6 +121,7 @@ export function handleApiError(error: any): FormError {
   return {
     message,
     fieldErrors,
+    generalError: message,
     statusCode,
     errorType,
   };
@@ -159,7 +172,7 @@ export function getFieldError(fieldErrors: FieldError[], fieldName: string): str
  */
 export function isRetryableError(error: FormError): boolean {
   return error.errorType === 'network' || 
-         (error.statusCode && [408, 429, 500, 502, 503, 504].includes(error.statusCode));
+         (error.statusCode !== undefined && [408, 429, 500, 502, 503, 504].includes(error.statusCode));
 }
 
 /**

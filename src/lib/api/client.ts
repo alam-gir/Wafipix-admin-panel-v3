@@ -45,11 +45,11 @@ const clearAuthState = async () => {
 };
 
 // Helper function to check if user is authenticated
-const isUserAuthenticated = () => {
+const isUserAuthenticated = async () => {
   try {
-    const { useAuthStore } = require('../../stores/auth-store');
+    const { useAuthStore } = await import('../../stores/auth-store');
     return useAuthStore.getState().isAuthenticated;
-  } catch (error) {
+  } catch {
     return false;
   }
 };
@@ -76,7 +76,7 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true;
 
       // Check if user is still authenticated before attempting refresh
-      if (!isUserAuthenticated()) {
+      if (!(await isUserAuthenticated())) {
         console.log('User not authenticated, skipping token refresh');
         return Promise.reject(error);
       }

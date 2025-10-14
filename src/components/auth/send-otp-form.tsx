@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useSendOtp } from '@/hooks/use-send-otp';
+import { useSendOtp } from '@/lib/hooks/otp/use-send-otp';
 import { Mail, Loader2 } from 'lucide-react';
 
 export function SendOtpForm() {
