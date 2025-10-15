@@ -5,7 +5,6 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Select } from '@/components/ui/select';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 
 interface CategoryPaginationProps {
@@ -70,87 +69,121 @@ export function CategoryPagination({
   }
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-4">
-        <div className="text-sm text-muted-foreground">
-          Showing {startItem} to {endItem} of {totalElements} categories
+    <div className="space-y-4">
+      {/* Mobile Layout */}
+      <div className="flex flex-col gap-3 sm:hidden">
+        {/* Info */}
+        <div className="text-center">
+          <div className="text-sm text-muted-foreground">
+            Showing {startItem} to {endItem} of {totalElements} categories
+          </div>
+          <div className="text-xs text-muted-foreground mt-1">
+            Page {currentPage + 1} of {totalPages}
+          </div>
         </div>
         
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Items per page:</span>
-          <Select
-            value={pageSize.toString()}
-            onValueChange={(value) => onPageSizeChange(parseInt(value))}
-            className="w-20"
+        {/* Mobile Navigation */}
+        <div className="flex items-center justify-between">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={!canGoPrevious}
+            className="flex-1 mr-2"
           >
-            <option value="10">10</option>
-            <option value="20">20</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-          </Select>
+            <ChevronLeft className="h-4 w-4 mr-1" />
+            Previous
+          </Button>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={!canGoNext}
+            className="flex-1 ml-2"
+          >
+            Next
+            <ChevronRight className="h-4 w-4 ml-1" />
+          </Button>
         </div>
       </div>
 
-      <div className="flex items-center gap-1">
-        {/* First Page */}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onPageChange(0)}
-          disabled={!canGoPrevious}
-        >
-          <ChevronsLeft className="h-4 w-4" />
-        </Button>
-
-        {/* Previous Page */}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onPageChange(currentPage - 1)}
-          disabled={!canGoPrevious}
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-
-        {/* Page Numbers */}
-        <div className="flex items-center gap-1">
-          {getVisiblePages().map((page, index) => (
-            <div key={index}>
-              {page === '...' ? (
-                <span className="px-3 py-2 text-sm text-muted-foreground">...</span>
-              ) : (
-                <Button
-                  variant={currentPage === page - 1 ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => onPageChange(page - 1)}
-                  className="min-w-[40px]"
-                >
-                  {page}
-                </Button>
-              )}
-            </div>
-          ))}
+      {/* Desktop Layout */}
+      <div className="hidden sm:flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="text-sm text-muted-foreground">
+            Showing {startItem} to {endItem} of {totalElements} categories
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">Items per page:</span>
+            <span className="text-sm font-medium">{pageSize}</span>
+          </div>
         </div>
 
-        {/* Next Page */}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onPageChange(currentPage + 1)}
-          disabled={!canGoNext}
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
+        <div className="flex items-center gap-1">
+          {/* First Page */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange(0)}
+            disabled={!canGoPrevious}
+            className="hidden md:flex"
+          >
+            <ChevronsLeft className="h-4 w-4" />
+          </Button>
 
-        {/* Last Page */}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onPageChange(totalPages - 1)}
-          disabled={!canGoNext}
-        >
-          <ChevronsRight className="h-4 w-4" />
-        </Button>
+          {/* Previous Page */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={!canGoPrevious}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+
+          {/* Page Numbers */}
+          <div className="flex items-center gap-1">
+            {getVisiblePages().map((page, index) => (
+              <div key={index}>
+                {page === '...' ? (
+                  <span className="px-2 py-1 text-sm text-muted-foreground">...</span>
+                ) : (
+                  <Button
+                    variant={currentPage === page - 1 ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => onPageChange(page - 1)}
+                    className="min-w-[36px] h-8 px-2"
+                  >
+                    {page}
+                  </Button>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Next Page */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={!canGoNext}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+
+          {/* Last Page */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange(totalPages - 1)}
+            disabled={!canGoNext}
+            className="hidden md:flex"
+          >
+            <ChevronsRight className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );

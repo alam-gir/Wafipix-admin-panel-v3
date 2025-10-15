@@ -9,7 +9,6 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
@@ -37,6 +36,7 @@ interface TreeNodeProps {
   category: Category;
   level: number;
   isExpanded: boolean;
+  expandedNodes: Set<string>;
   onToggle: (categoryId: string) => void;
   onCategorySelect: (category: Category) => void;
   onCategoryEdit: (category: Category) => void;
@@ -48,6 +48,7 @@ function TreeNode({
   category,
   level,
   isExpanded,
+  expandedNodes,
   onToggle,
   onCategorySelect,
   onCategoryEdit,
@@ -59,130 +60,253 @@ function TreeNode({
 
   return (
     <div className="w-full">
-      {/* Category Node */}
-      <div 
-        className={`
-          flex items-center gap-3 p-3 rounded-lg transition-colors
-          ${category.status === 'INACTIVE' 
-            ? 'bg-gray-50 border border-gray-200' 
-            : 'bg-white border border-gray-200 hover:bg-gray-50'
-          }
-        `}
-        style={{ marginLeft: `${indentLevel}px` }}
-      >
-        {/* Expand/Collapse Button */}
-        <div className="flex-shrink-0">
-          {hasChildren ? (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-6 w-6 p-0"
-              onClick={() => onToggle(category.id)}
-            >
-              {isExpanded ? (
-                <ChevronDown className="h-4 w-4" />
+      {/* Mobile Layout */}
+      <div className="sm:hidden">
+        <div 
+          className={`
+            p-3 rounded-lg transition-colors space-y-2
+            ${category.status === 'INACTIVE' 
+              ? 'bg-gray-50 border border-gray-200' 
+              : 'bg-white border border-gray-200 hover:bg-gray-50'
+            }
+          `}
+          style={{ marginLeft: `${indentLevel}px` }}
+        >
+          {/* Top Row - Icon, Title, Expand Button */}
+          <div className="flex items-center gap-3">
+            {/* Expand/Collapse Button */}
+            <div className="flex-shrink-0">
+              {hasChildren ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 w-6 p-0"
+                  onClick={() => onToggle(category.id)}
+                >
+                  {isExpanded ? (
+                    <ChevronDown className="h-4 w-4" />
+                  ) : (
+                    <ChevronRight className="h-4 w-4" />
+                  )}
+                </Button>
               ) : (
-                <ChevronRight className="h-4 w-4" />
-              )}
-            </Button>
-          ) : (
-            <div className="h-6 w-6" /> // Spacer for alignment
-          )}
-        </div>
-
-        {/* Category Icon */}
-        <div className="flex-shrink-0">
-          {category.image ? (
-            <div className="relative h-8 w-8 rounded-md overflow-hidden">
-              <Image
-                src={category.image}
-                alt={category.title}
-                fill
-                className="object-cover"
-                sizes="32px"
-              />
-            </div>
-          ) : (
-            <div className="h-8 w-8 rounded-md bg-gray-100 flex items-center justify-center">
-              {isExpanded ? (
-                <FolderOpen className="h-4 w-4 text-gray-600" />
-              ) : (
-                <Folder className="h-4 w-4 text-gray-600" />
+                <div className="h-6 w-6" />
               )}
             </div>
-          )}
-        </div>
 
-        {/* Category Info */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <h3 className={`font-medium truncate ${
-              category.status === 'INACTIVE' ? 'text-gray-500' : 'text-gray-900'
-            }`}>
-              {category.title}
-            </h3>
+            {/* Category Icon */}
+            <div className="flex-shrink-0">
+              {category.image ? (
+                <div className="relative h-8 w-8 rounded-md overflow-hidden">
+                  <Image
+                    src={category.image}
+                    alt={category.title}
+                    fill
+                    className="object-cover"
+                    sizes="32px"
+                  />
+                </div>
+              ) : (
+                <div className="h-8 w-8 rounded-md bg-gray-100 flex items-center justify-center">
+                  {isExpanded ? (
+                    <FolderOpen className="h-4 w-4 text-gray-600" />
+                  ) : (
+                    <Folder className="h-4 w-4 text-gray-600" />
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Category Title */}
+            <div className="flex-1 min-w-0">
+              <h3 className={`font-medium text-sm ${
+                category.status === 'INACTIVE' ? 'text-gray-500' : 'text-gray-900'
+              }`}>
+                {category.title}
+              </h3>
+            </div>
+          </div>
+
+          {/* Bottom Row - Status Badge and Actions */}
+          <div className="flex items-center justify-between">
             <Badge 
               variant={category.status === 'ACTIVE' ? 'default' : 'secondary'}
               className="text-xs"
             >
               {category.status}
             </Badge>
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 w-7 p-0"
+                onClick={() => onCreateSubcategory(category)}
+                title="Add subcategory"
+              >
+                <Plus className="h-3.5 w-3.5" />
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 w-7 p-0"
+                onClick={() => onCategorySelect(category)}
+                title="View details"
+              >
+                <Eye className="h-3.5 w-3.5" />
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 w-7 p-0"
+                onClick={() => onCategoryEdit(category)}
+                title="Edit category"
+              >
+                <Edit className="h-3.5 w-3.5" />
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 w-7 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                onClick={() => onCategoryDelete(category)}
+                title="Delete category"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </Button>
+            </div>
           </div>
-          {category.description && (
-            <p className={`text-sm truncate ${
-              category.status === 'INACTIVE' ? 'text-gray-400' : 'text-gray-600'
-            }`}>
-              {category.description}
-            </p>
-          )}
         </div>
+      </div>
 
-        {/* Action Buttons */}
-        <div className="flex items-center gap-1">
-          {/* Add Subcategory Button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0"
-            onClick={() => onCreateSubcategory(category)}
-            title="Add subcategory"
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
+      {/* Desktop Layout */}
+      <div className="hidden sm:block">
+        <div 
+          className={`
+            flex items-center gap-3 p-3 rounded-lg transition-colors
+            ${category.status === 'INACTIVE' 
+              ? 'bg-gray-50 border border-gray-200' 
+              : 'bg-white border border-gray-200 hover:bg-gray-50'
+            }
+          `}
+          style={{ marginLeft: `${indentLevel}px` }}
+        >
+          {/* Expand/Collapse Button */}
+          <div className="flex-shrink-0">
+            {hasChildren ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 w-6 p-0"
+                onClick={() => onToggle(category.id)}
+              >
+                {isExpanded ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
+                  <ChevronRight className="h-4 w-4" />
+                )}
+              </Button>
+            ) : (
+              <div className="h-6 w-6" /> // Spacer for alignment
+            )}
+          </div>
 
-          {/* View Button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0"
-            onClick={() => onCategorySelect(category)}
-            title="View details"
-          >
-            <Eye className="h-4 w-4" />
-          </Button>
+          {/* Category Icon */}
+          <div className="flex-shrink-0">
+            {category.image ? (
+              <div className="relative h-8 w-8 rounded-md overflow-hidden">
+                <Image
+                  src={category.image}
+                  alt={category.title}
+                  fill
+                  className="object-cover"
+                  sizes="32px"
+                />
+              </div>
+            ) : (
+              <div className="h-8 w-8 rounded-md bg-gray-100 flex items-center justify-center">
+                {isExpanded ? (
+                  <FolderOpen className="h-4 w-4 text-gray-600" />
+                ) : (
+                  <Folder className="h-4 w-4 text-gray-600" />
+                )}
+              </div>
+            )}
+          </div>
 
-          {/* Edit Button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0"
-            onClick={() => onCategoryEdit(category)}
-            title="Edit category"
-          >
-            <Edit className="h-4 w-4" />
-          </Button>
+          {/* Category Info */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <h3 className={`font-medium truncate ${
+                category.status === 'INACTIVE' ? 'text-gray-500' : 'text-gray-900'
+              }`}>
+                {category.title}
+              </h3>
+              <Badge 
+                variant={category.status === 'ACTIVE' ? 'default' : 'secondary'}
+                className="text-xs"
+              >
+                {category.status}
+              </Badge>
+            </div>
+            {category.description && (
+              <p className={`text-sm truncate ${
+                category.status === 'INACTIVE' ? 'text-gray-400' : 'text-gray-600'
+              }`}>
+                {category.description}
+              </p>
+            )}
+          </div>
 
+          {/* Action Buttons */}
+          <div className="flex items-center gap-1">
+            {/* Add Subcategory Button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={() => onCreateSubcategory(category)}
+              title="Add subcategory"
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
 
-          {/* Delete Button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-            onClick={() => onCategoryDelete(category)}
-            title="Delete category"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
+            {/* View Button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={() => onCategorySelect(category)}
+              title="View details"
+            >
+              <Eye className="h-4 w-4" />
+            </Button>
+
+            {/* Edit Button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={() => onCategoryEdit(category)}
+              title="Edit category"
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
+
+            {/* Delete Button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+              onClick={() => onCategoryDelete(category)}
+              title="Delete category"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -194,7 +318,8 @@ function TreeNode({
               key={child.id}
               category={child}
               level={level + 1}
-              isExpanded={false} // Children start collapsed
+              isExpanded={expandedNodes.has(child.id)}
+              expandedNodes={expandedNodes}
               onToggle={onToggle}
               onCategorySelect={onCategorySelect}
               onCategoryEdit={onCategoryEdit}
@@ -305,6 +430,7 @@ export function CategoryTreeContent({
             category={category}
             level={0}
             isExpanded={expandedNodes.has(category.id)}
+            expandedNodes={expandedNodes}
             onToggle={handleToggle}
             onCategorySelect={onCategorySelect}
             onCategoryEdit={onCategoryEdit}

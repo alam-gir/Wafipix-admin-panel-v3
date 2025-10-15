@@ -103,8 +103,8 @@ export function CategoryListContent({
         <CategoryPagination
           currentPage={categoriesData.pagination.page}
           totalPages={categoriesData.pagination.totalPages}
-          totalElements={categoriesData.pagination.total}
-          pageSize={filters.size}
+          totalElements={categoriesData.pagination.totalElements}
+          pageSize={categoriesData.pagination.size}
           onPageChange={onPageChange}
           onPageSizeChange={onPageSizeChange}
         />

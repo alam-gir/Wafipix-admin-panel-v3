@@ -5,7 +5,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -13,12 +12,10 @@ import {
   Edit, 
   Trash2, 
   Eye, 
-  ChevronRight,
   FolderOpen
 } from 'lucide-react';
 import Image from 'next/image';
 import { Category } from '@/lib/query/types';
-import { formatDistanceToNow } from 'date-fns';
 
 interface CategoryListItemProps {
   category: Category;
@@ -37,141 +34,127 @@ export function CategoryListItem({
 }: CategoryListItemProps) {
   const [showActions, setShowActions] = useState(false);
 
-  const getStatusColor = (status: string) => {
-    return status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800';
-  };
-
-  const getLevelIndent = (level: number) => {
-    return level * 20; // 20px per level
-  };
-
   return (
-    <Card className={`hover:shadow-md transition-shadow ${
+    <div className={`group border rounded-lg transition-all duration-200 hover:shadow-sm ${
       category.status === 'INACTIVE' 
-        ? 'bg-gray-50 border-gray-200 opacity-75' 
-        : 'bg-white'
+        ? 'bg-gray-50/50 border-gray-200' 
+        : 'bg-white border-gray-200 hover:border-gray-300'
     }`}>
-      <CardContent className="p-4">
-        <div className="flex items-start justify-between">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-3 mb-2">
-              {/* Level Indentation */}
-              {category.level > 0 && (
-                <div 
-                  className="flex items-center text-muted-foreground"
-                  style={{ marginLeft: `${getLevelIndent(category.level)}px` }}
-                >
-                  <ChevronRight className="h-4 w-4" />
+      <div className="p-3">
+        <div className="flex items-center justify-between">
+          {/* Left Section - Category Info */}
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            {/* Category Icon */}
+            <div className="flex-shrink-0 relative">
+              {category.image ? (
+                <div className="relative w-8 h-8 rounded-md overflow-hidden bg-gray-100">
+                  <Image 
+                    src={category.image} 
+                    alt={category.title}
+                    fill
+                    className="object-cover"
+                    sizes="32px"
+                  />
+                </div>
+              ) : (
+                <div className="w-8 h-8 rounded-md bg-gray-100 flex items-center justify-center">
+                  <FolderOpen className="h-4 w-4 text-gray-500" />
                 </div>
               )}
-              
-              {/* Category Icon */}
-              <div className="flex-shrink-0">
-                {category.image ? (
-                  <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-gray-100">
-                    <Image 
-                      src={category.image} 
-                      alt={category.title}
-                      fill
-                      className="object-cover"
-                      sizes="40px"
-                    />
-                  </div>
-                ) : (
-                  <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
-                    <FolderOpen className="h-5 w-5 text-gray-500" />
-                  </div>
+              {/* Status Indicator - positioned relative to icon */}
+              <div className={`absolute -top-1 -right-1 h-3 w-3 rounded-full border-2 border-white ${
+                category.status === 'ACTIVE' ? 'bg-green-500' : 'bg-gray-400'
+              }`} />
+            </div>
+
+            {/* Category Details */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <h3 className={`font-medium text-sm truncate ${
+                  category.status === 'INACTIVE' ? 'text-gray-500' : 'text-gray-900'
+                }`}>
+                  {category.title}
+                </h3>
+                {/* Children Badge - only show if has children */}
+                {category.hasChildren && category.children && category.children.length > 0 && (
+                  <Badge variant="outline" className="text-xs px-2 py-0.5">
+                    {category.children.length} children
+                  </Badge>
                 )}
               </div>
-
-              {/* Category Info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className={`font-semibold text-lg truncate ${
-                    category.status === 'INACTIVE' ? 'text-gray-500' : ''
-                  }`}>
-                    {category.title}
-                  </h3>
-                  <Badge className={getStatusColor(category.status)}>
-                    {category.status}
-                  </Badge>
-                  {category.hasChildren && (
-                    <Badge variant="outline" className="text-xs">
-                      Has Children
-                    </Badge>
-                  )}
-                </div>
-                
-                {category.description && (
-                  <p className={`text-sm line-clamp-2 mb-2 ${
-                    category.status === 'INACTIVE' ? 'text-gray-400' : 'text-muted-foreground'
-                  }`}>
-                    {category.description}
-                  </p>
+              
+              {/* Metadata */}
+              <div className="flex items-center gap-3 text-xs text-gray-500 mt-1">
+                <span>Level {category.level}</span>
+                {category.parentTitle && (
+                  <>
+                    <span>•</span>
+                    <span className="truncate">Parent: {category.parentTitle}</span>
+                  </>
                 )}
-
-                <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                  <span>Level: {category.level}</span>
-                  {category.parentTitle && (
-                    <span>Parent: {category.parentTitle}</span>
-                  )}
-                  {category.createdAt && (
-                    <span>Created: {formatDistanceToNow(new Date(category.createdAt), { addSuffix: true })}</span>
-                  )}
-                </div>
               </div>
             </div>
           </div>
 
-          {/* Actions */}
-          <div className="flex items-center gap-2 ml-4">
+          {/* Right Section - Actions */}
+          <div className="flex items-center gap-1 ml-3">
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
+              className="h-7 w-7 p-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
               onClick={() => onView(category)}
+              title="View details"
             >
-              <Eye className="h-4 w-4" />
+              <Eye className="h-3.5 w-3.5" />
             </Button>
             
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
+              className="h-7 w-7 p-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
               onClick={() => onToggleStatus(category)}
+              title={category.status === 'ACTIVE' ? 'Deactivate' : 'Activate'}
             >
-              {category.status === 'ACTIVE' ? 'Deactivate' : 'Activate'}
+              {category.status === 'ACTIVE' ? (
+                <div className="h-2 w-2 rounded-full bg-green-500" />
+              ) : (
+                <div className="h-2 w-2 rounded-full bg-gray-400" />
+              )}
             </Button>
 
             <div className="relative">
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
+                className="h-7 w-7 p-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
                 onClick={() => setShowActions(!showActions)}
+                title="More actions"
               >
-                <MoreHorizontal className="h-4 w-4" />
+                <MoreHorizontal className="h-3.5 w-3.5" />
               </Button>
               
               {showActions && (
-                <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-md shadow-lg border z-10">
+                <div className="absolute right-0 top-full mt-1 w-40 bg-white rounded-md shadow-lg border z-10">
                   <div className="py-1">
                     <button
                       onClick={() => {
                         onEdit(category);
                         setShowActions(false);
                       }}
-                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      className="flex items-center w-full px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-100"
                     >
-                      <Edit className="h-4 w-4 mr-2" />
-                      Edit Category
+                      <Edit className="h-3 w-3 mr-2" />
+                      Edit
                     </button>
                     <button
                       onClick={() => {
                         onDelete(category);
                         setShowActions(false);
                       }}
-                      className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                      className="flex items-center w-full px-3 py-1.5 text-xs text-red-600 hover:bg-red-50"
                     >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete Category
+                      <Trash2 className="h-3 w-3 mr-2" />
+                      Delete
                     </button>
                   </div>
                 </div>
@@ -179,7 +162,7 @@ export function CategoryListItem({
             </div>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

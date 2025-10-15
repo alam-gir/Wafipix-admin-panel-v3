@@ -87,6 +87,29 @@ function removeCategoryFromListData(oldData: CacheData, categoryId: string): Cac
   return oldData;
 }
 
+// Utility function to update category in tree structure
+function updateCategoryInTreeData(oldData: Category[] | undefined, updatedCategory: Category, categoryId: string): Category[] {
+  if (!oldData) return [];
+  
+  // Recursive function to update category in tree
+  function updateInTree(categories: Category[]): Category[] {
+    return categories.map(category => {
+      if (category.id === categoryId) {
+        return updatedCategory;
+      }
+      if (category.children) {
+        return {
+          ...category,
+          children: updateInTree(category.children)
+        };
+      }
+      return category;
+    });
+  }
+  
+  return updateInTree(oldData);
+}
+
 // Reusable optimistic update function for category mutations
 function updateCategoryOptimistically(
   queryClient: ReturnType<typeof useQueryClient>,
@@ -105,11 +128,42 @@ function updateCategoryOptimistically(
     (oldData: CacheData) => updateCategoryInListData(oldData, updatedCategory, categoryId)
   );
   
-  // Update in hierarchical queries
+  // Optimistically update the tree structure
   queryClient.setQueriesData(
-    { queryKey: queryKeys.categories.all },
-    (oldData: CacheData) => updateCategoryInListData(oldData, updatedCategory, categoryId)
+    { queryKey: queryKeys.categories.tree() },
+    (oldData: Category[] | undefined) => updateCategoryInTreeData(oldData, updatedCategory, categoryId)
   );
+}
+
+// Utility function to add category to tree structure
+function addCategoryToTreeData(oldData: Category[] | undefined, newCategory: Category): Category[] {
+  if (!oldData) return [newCategory];
+  
+  // If the new category has no parent, add it to the root level
+  if (!newCategory.parentId) {
+    return [newCategory, ...oldData];
+  }
+  
+  // Recursive function to find and add category to its parent
+  function addToParent(categories: Category[], parentId: string, newCategory: Category): Category[] {
+    return categories.map(category => {
+      if (category.id === parentId) {
+        return {
+          ...category,
+          children: [...(category.children || []), newCategory]
+        };
+      }
+      if (category.children) {
+        return {
+          ...category,
+          children: addToParent(category.children, parentId, newCategory)
+        };
+      }
+      return category;
+    });
+  }
+  
+  return addToParent(oldData, newCategory.parentId, newCategory);
 }
 
 // Reusable function to add category optimistically
@@ -123,10 +177,10 @@ function addCategoryOptimistically(
     (oldData: CacheData) => addCategoryToListData(oldData, newCategory)
   );
   
-  // Add to hierarchical queries
+  // Optimistically update the tree structure
   queryClient.setQueriesData(
-    { queryKey: queryKeys.categories.all },
-    (oldData: CacheData) => addCategoryToListData(oldData, newCategory)
+    { queryKey: queryKeys.categories.tree() },
+    (oldData: Category[] | undefined) => addCategoryToTreeData(oldData, newCategory)
   );
   
   // Set the individual category data
@@ -134,6 +188,23 @@ function addCategoryOptimistically(
     queryKeys.categories.detail(newCategory.id),
     newCategory
   );
+}
+
+// Utility function to remove category from tree structure
+function removeCategoryFromTreeData(oldData: Category[] | undefined, categoryId: string): Category[] {
+  if (!oldData) return [];
+  
+  // Recursive function to remove category from tree
+  function removeFromTree(categories: Category[]): Category[] {
+    return categories
+      .filter(category => category.id !== categoryId)
+      .map(category => ({
+        ...category,
+        children: category.children ? removeFromTree(category.children) : undefined
+      }));
+  }
+  
+  return removeFromTree(oldData);
 }
 
 // Reusable function to remove category optimistically
@@ -147,10 +218,10 @@ function removeCategoryOptimistically(
     (oldData: CacheData) => removeCategoryFromListData(oldData, categoryId)
   );
   
-  // Remove from hierarchical queries
+  // Optimistically update the tree structure
   queryClient.setQueriesData(
-    { queryKey: queryKeys.categories.all },
-    (oldData: CacheData) => removeCategoryFromListData(oldData, categoryId)
+    { queryKey: queryKeys.categories.tree() },
+    (oldData: Category[] | undefined) => removeCategoryFromTreeData(oldData, categoryId)
   );
   
   // Remove the individual category data
