@@ -3,6 +3,7 @@
  */
 
 import { z } from 'zod';
+import { getTextLength } from '@/lib/utils/rich-text';
 
 // Category status enum - matching API
 export const categoryStatusSchema = z.enum(['ACTIVE', 'INACTIVE']);
@@ -17,9 +18,13 @@ export const createCategorySchema = z.object({
     .trim(),
   description: z
     .string()
-    .max(1000, 'Description must be less than 1000 characters')
     .optional()
-    .or(z.literal('')),
+    .or(z.literal(''))
+    .refine((val) => {
+      if (!val || val === '') return true;
+      const textLength = getTextLength(val);
+      return textLength <= 1000;
+    }, 'Description must be less than 1000 characters (plain text)'),
   image: z
     .instanceof(File, { message: 'Please select a valid image file' })
     .refine((file) => file.size <= 5 * 1024 * 1024, 'Image size must be less than 5MB')
@@ -50,9 +55,13 @@ export const updateCategorySchema = z.object({
     .optional(),
   description: z
     .string()
-    .max(1000, 'Description must be less than 1000 characters')
     .optional()
-    .or(z.literal('')),
+    .or(z.literal(''))
+    .refine((val) => {
+      if (!val || val === '') return true;
+      const textLength = getTextLength(val);
+      return textLength <= 1000;
+    }, 'Description must be less than 1000 characters (plain text)'),
   image: z
     .instanceof(File, { message: 'Please select a valid image file' })
     .refine((file) => file.size <= 5 * 1024 * 1024, 'Image size must be less than 5MB')

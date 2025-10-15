@@ -22,6 +22,7 @@ export const PROTECTED_ROUTES = [
   '/settings',
   '/support',
   '/management',
+  '/rich-text-editor-demo',
 ] as const;
 
 // Dashboard navigation menu items

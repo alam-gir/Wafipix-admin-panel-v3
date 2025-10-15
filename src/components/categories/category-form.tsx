@@ -8,7 +8,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
@@ -29,6 +28,7 @@ import {
 } from '@/lib/schemas';
 import { Category } from '@/lib/query/types';
 import { useCategoryOptions, useCategoryParentOptions } from '@/lib/query';
+import { RichTextEditorFormField } from '@/components/rich-text-editor';
 
 interface CategoryFormProps {
   category?: Category;
@@ -144,15 +144,16 @@ export function CategoryForm({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea 
+                    <RichTextEditorFormField
+                      value={field.value || ''}
+                      onChange={field.onChange}
                       placeholder="Enter category description (optional)"
-                      rows={3}
-                      {...field}
+                      label="Description"
+                      maxLength={1000}
+                      error={form.formState.errors.description?.message}
                     />
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />

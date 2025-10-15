@@ -8,7 +8,6 @@
 import { useState } from 'react';
 import { Modal } from '@/components/ui/modal';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { 
@@ -111,164 +110,167 @@ export function CategoryUnifiedModal({
       <div className="space-y-6">
         {mode === 'view' ? (
           <>
-            {/* Header */}
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-4">
+            {/* Row 1: Header Section (Facebook Post Style) */}
+            <div className="space-y-4">
+              {/* Top Row: Image, Title, Badges, Actions */}
+              <div className="flex items-start gap-4">
                 {/* Category Image */}
                 <div className="flex-shrink-0">
                   {displayCategory.image ? (
-                    <div className="relative w-20 h-20 rounded-lg overflow-hidden bg-gray-100">
+                    <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100">
                       <Image 
                         src={displayCategory.image} 
                         alt={displayCategory.title}
                         fill
                         className="object-cover"
-                        sizes="80px"
+                        sizes="64px"
                       />
                     </div>
                   ) : (
-                    <div className="w-20 h-20 rounded-lg bg-gray-100 flex items-center justify-center">
-                      <FolderOpen className="h-8 w-8 text-gray-500" />
+                    <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
+                      <FolderOpen className="h-6 w-6 text-gray-500" />
                     </div>
                   )}
                 </div>
 
-                {/* Category Info */}
+                {/* Title and Badges */}
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h2 className="text-2xl font-bold truncate">{displayCategory.title}</h2>
-                    <Badge className={getStatusColor(displayCategory.status)}>
-                      {displayCategory.status}
-                    </Badge>
-                    {displayCategory.hasChildren && (
-                      <Badge variant="outline" className="text-xs">
-                        Has Children
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                    <h2 className="text-xl font-bold truncate">{displayCategory.title}</h2>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <Badge className={getStatusColor(displayCategory.status)}>
+                        {displayCategory.status}
                       </Badge>
-                    )}
-                  </div>
-                  
-                  {displayCategory.description && (
-                    <p className="text-muted-foreground mb-3">
-                      {displayCategory.description}
-                    </p>
-                  )}
-
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Layers className="h-4 w-4" />
-                      <span>Level {displayCategory.level}</span>
+                      {displayCategory.hasChildren && (
+                        <Badge variant="outline" className="text-xs">
+                          Has Children
+                        </Badge>
+                      )}
                     </div>
-                    {displayCategory.parentTitle && (
-                      <div className="flex items-center gap-1">
-                        <User className="h-4 w-4" />
-                        <span>Parent: {displayCategory.parentTitle}</span>
-                      </div>
-                    )}
-                    {displayCategory.createdAt && (
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
-                        <span>
-                          Created {formatDistanceToNow(new Date(displayCategory.createdAt), { addSuffix: true })}
-                        </span>
-                      </div>
-                    )}
                   </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onToggleStatus(displayCategory)}
+                    className="hidden sm:flex"
+                  >
+                    {displayCategory.status === 'ACTIVE' ? 'Deactivate' : 'Activate'}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleEdit}
+                  >
+                    <Edit className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Edit</span>
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => onDelete(displayCategory)}
+                  >
+                    <Trash2 className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Delete</span>
+                  </Button>
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex items-center gap-2">
+              {/* Meta Information Row */}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-sm text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <Layers className="h-4 w-4" />
+                  <span>Level {displayCategory.level}</span>
+                </div>
+                {displayCategory.parentTitle && (
+                  <div className="flex items-center gap-1">
+                    <User className="h-4 w-4" />
+                    <span>Parent: {displayCategory.parentTitle}</span>
+                  </div>
+                )}
+                {displayCategory.createdAt && (
+                  <div className="flex items-center gap-1">
+                    <Calendar className="h-4 w-4" />
+                    <span>
+                      Created {formatDistanceToNow(new Date(displayCategory.createdAt), { addSuffix: true })}
+                    </span>
+                  </div>
+                )}
+                <div className="flex items-center gap-1">
+                  <span className="font-mono text-xs">ID: {displayCategory.id}</span>
+                </div>
+              </div>
+
+              {/* Mobile Action Buttons */}
+              <div className="flex items-center gap-2 sm:hidden">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => onToggleStatus(displayCategory)}
+                  className="flex-1"
                 >
                   {displayCategory.status === 'ACTIVE' ? 'Deactivate' : 'Activate'}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleEdit}
-                >
-                  <Edit className="h-4 w-4 mr-2" />
-                  Edit
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => onDelete(displayCategory)}
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete
                 </Button>
               </div>
             </div>
 
             <Separator />
 
-            {/* Additional Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Category Information</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">ID:</span>
-                    <span className="font-mono text-sm">{displayCategory.id}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Status:</span>
-                    <Badge className={getStatusColor(displayCategory.status)}>
-                      {displayCategory.status}
-                    </Badge>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Level:</span>
-                    <span>{displayCategory.level}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Has Children:</span>
-                    <span>{displayCategory.hasChildren ? 'Yes' : 'No'}</span>
-                  </div>
-                </CardContent>
-              </Card>
+            {/* Row 2: Description Section (Facebook Post Content Style) */}
+            {displayCategory.description && (
+              <div className="space-y-3">
+                <h3 className="text-sm font-medium text-muted-foreground">Description</h3>
+                <div 
+                  className="prose prose-sm max-w-none text-gray-900 leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: displayCategory.description }}
+                />
+              </div>
+            )}
 
-              {/* Timestamps - Only show if we have timestamp data */}
-              {(displayCategory.createdAt || displayCategory.updatedAt) && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Timestamps</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    {displayCategory.createdAt && (
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Created:</span>
-                        <span className="text-sm">
-                          {new Date(displayCategory.createdAt).toLocaleDateString()}
-                        </span>
-                      </div>
-                    )}
-                    {displayCategory.updatedAt && (
-                      <>
-                        <div className="flex justify-between">
+            {/* Additional Details - Only show if no description or for technical details */}
+            {!displayCategory.description && (
+              <div className="space-y-4">
+                <h3 className="text-sm font-medium text-muted-foreground">Additional Information</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Status:</span>
+                      <Badge className={getStatusColor(displayCategory.status)}>
+                        {displayCategory.status}
+                      </Badge>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Level:</span>
+                      <span>{displayCategory.level}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Has Children:</span>
+                      <span>{displayCategory.hasChildren ? 'Yes' : 'No'}</span>
+                    </div>
+                  </div>
+                  
+                  {(displayCategory.createdAt || displayCategory.updatedAt) && (
+                    <div className="space-y-2">
+                      {displayCategory.createdAt && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Created:</span>
+                          <span>{new Date(displayCategory.createdAt).toLocaleDateString()}</span>
+                        </div>
+                      )}
+                      {displayCategory.updatedAt && (
+                        <div className="flex justify-between text-sm">
                           <span className="text-muted-foreground">Updated:</span>
-                          <span className="text-sm">
-                            {new Date(displayCategory.updatedAt).toLocaleDateString()}
-                          </span>
+                          <span>{new Date(displayCategory.updatedAt).toLocaleDateString()}</span>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Last Updated:</span>
-                          <span className="text-sm">
-                            {formatDistanceToNow(new Date(displayCategory.updatedAt), { addSuffix: true })}
-                          </span>
-                        </div>
-                      </>
-                    )}
-                  </CardContent>
-                </Card>
-              )}
-            </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </>
         ) : (
           /* Edit Mode */

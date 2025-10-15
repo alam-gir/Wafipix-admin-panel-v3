@@ -1,6 +1,32 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Rich Text Editor Styles */
+.prose ul {
+  @apply list-disc list-outside ml-6;
+}
+
+.prose ol {
+  @apply list-decimal list-outside ml-6;
+}
+
+.prose li {
+  @apply mb-1;
+}
+
+/* Ensure proper list styling in editor */
+.ProseMirror ul {
+  @apply list-disc list-outside ml-6;
+}
+
+.ProseMirror ol {
+  @apply list-decimal list-outside ml-6;
+}
+
+.ProseMirror li {
+  @apply mb-1;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
