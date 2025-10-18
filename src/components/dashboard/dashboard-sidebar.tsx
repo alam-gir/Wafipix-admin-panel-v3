@@ -18,7 +18,8 @@ import {
   Package,
   Tags,
   CreditCard,
-  Users
+  Users,
+  Warehouse
 } from 'lucide-react';
 import { DASHBOARD_NAVIGATION, HELP_NAVIGATION } from '@/lib/constants/routes';
 
@@ -35,7 +36,8 @@ const iconMap = {
   Package,
   Tags,
   CreditCard,
-  Users
+  Users,
+  Warehouse
 } as const;
 
 // Convert navigation items to include actual icon components

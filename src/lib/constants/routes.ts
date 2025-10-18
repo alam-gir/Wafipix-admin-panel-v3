@@ -49,7 +49,7 @@ export const DASHBOARD_NAVIGATION = [
   {
     name: 'Inventory',
     href: '/inventory',
-    icon: 'Sparkles'
+    icon: 'Warehouse'
   },
   {
     name: 'Customers',
