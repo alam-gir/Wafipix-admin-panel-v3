@@ -38,6 +38,8 @@ export default function ProductViewPage({ params }: ProductViewPageProps) {
   const deleteProductMutation = useDeleteProduct();
   const updateProductStatusMutation = useUpdateProductStatus();
 
+  const isActive = product?.status === 'ACTIVE';
+
   const handleEdit = () => {
     router.push(`/products/${id}/edit`);
   };
@@ -105,7 +107,6 @@ export default function ProductViewPage({ params }: ProductViewPageProps) {
   // Calculate total stock from variants
   const totalStock = product.variants?.reduce((sum, variant) => sum + (variant.stockQuantity || 0), 0) || 0;
   const variantCount = product.variants?.length || 0;
-  const isActive = product.status === 'ACTIVE';
 
   return (
     <div className="min-h-screen bg-gray-50">
