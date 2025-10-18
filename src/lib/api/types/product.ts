@@ -84,8 +84,10 @@ export interface ProductVariant {
 }
 
 export interface VariantAttributeValue {
-  attributeValueId: string;
+  attributeId: string;
   attributeName: string;
+  attributeType: 'TEXT' | 'NUMBER' | 'IMAGE';
+  valueId: string;
   value: string;
   imageUrl?: string;
 }
